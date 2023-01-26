@@ -18,7 +18,7 @@ cmake --build build           # Compiles and builds the Spotter application
 **Running the application:**
 
 ```sh
-./build/main
+./build/fileserver
 ```
 
 ## ⚒️ Development

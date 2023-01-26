@@ -3,7 +3,7 @@
 namespace Efs{
   class Efs {
     public:
-      Efs();
+      Efs(int argc, char** argv);
       ~Efs();
   };
 }

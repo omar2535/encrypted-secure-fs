@@ -29,12 +29,12 @@ target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 # Add an executable for the file app/main.cpp.
 # If you add more executables, copy these lines accordingly.
-add_executable(main app/main.cpp)   # Name of exec. and location of file.
-target_link_libraries(main PRIVATE ${LIBRARY_NAME})  # Link the executable to library (if it uses it).
+add_executable(fileserver app/main.cpp)   # Name of exec. and location of file.
+target_link_libraries(fileserver PRIVATE ${LIBRARY_NAME})  # Link the executable to library (if it uses it).
 
 # Set the properties you require, e.g. what C++ standard to use. Here applied to library and main (change as needed).
 set_target_properties(
-    ${LIBRARY_NAME} main
+    ${LIBRARY_NAME} fileserver
       PROPERTIES
         CXX_STANDARD 17
         CXX_STANDARD_REQUIRED YES

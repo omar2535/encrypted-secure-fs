@@ -14,7 +14,11 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")                 # This l
 file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
-set(LIBRARY_NAME Efs)  # Default name for the library built from src/*.cpp (change if you wish)
+# Find packages
+find_package(OpenSSL REQUIRED)
+
+# Default name for the library built from src/*.cpp (change if you wish)
+set(LIBRARY_NAME Efs)
 
 # --------------------------------------------------------------------------------
 #                            Build! (Change as needed)
@@ -30,6 +34,7 @@ target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 # Add an executable for the file app/main.cpp.
 # If you add more executables, copy these lines accordingly.
 add_executable(fileserver app/main.cpp)   # Name of exec. and location of file.
+target_link_libraries(fileserver PRIVATE OpenSSL::SSL)     # Link executable with OPENSSL
 target_link_libraries(fileserver PRIVATE ${LIBRARY_NAME})  # Link the executable to library (if it uses it).
 
 # Set the properties you require, e.g. what C++ standard to use. Here applied to library and main (change as needed).

@@ -2,6 +2,12 @@
 
 ## ⌨️ Getting started
 
+**Installing required libraries:**
+
+```sh
+sudo apt-get install libssl-dev
+```
+
 **Configuring the project (only need to run on first time):**
 
 ```sh

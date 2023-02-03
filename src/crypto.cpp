@@ -6,8 +6,10 @@ Efs::Crypto::Crypto() {
 
 std::string Efs::Crypto::generateKey() {
   // TODO: Generate a RSA key (?)
+  return "";
 }
 
 bool Efs::Crypto::validateKey() {
   // TODO: Validate key here (?)
+  return true;
 }

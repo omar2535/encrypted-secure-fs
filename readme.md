@@ -11,6 +11,7 @@ sudo apt-get install libssl-dev
 **Configuring the project (only need to run on first time):**
 
 ```sh
+git submodule update --init --recursive
 mkdir -p build
 cmake . -B build              # Configures the cmake project
 ```
@@ -34,26 +35,3 @@ cmake --build build           # Compiles and builds the Spotter application
 To set up your environment on visual studio code, follow the steps below:
 
 - Be sure to have the [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools) extension
-- Put the following in `.vscode/c_cpp_properties.json` file:
-  
-    ```json
-    {
-      "configurations": [
-        {
-          "name": "CMake",
-          "compileCommands": "${config:cmake.buildDirectory}/compile_commands.json",
-          "configurationProvider": "ms-vscode.cmake-tools"
-        }
-      ],
-      "version": 4
-    }
-    ```
-
-    and have the following `.vscode/settings.json` file:
-
-    ```json
-    {
-      "editor.indentSize": "tabSize",
-      "editor.tabSize": 2
-    }
-    ```

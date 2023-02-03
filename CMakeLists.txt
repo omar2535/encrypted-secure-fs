@@ -26,6 +26,11 @@ set(LIBRARY_NAME Efs)
 # Compile all sources into a library.
 add_library(${LIBRARY_NAME} ${headers} ${sources})
 
+# Add submodules from external folder
+set(EXTERNAL_LIB_HEADERS
+    external/nlohmann_json/single_include
+)
+
 target_include_directories(${LIBRARY_NAME} PRIVATE ${EXTERNAL_LIB_HEADERS})
 
 # Lib needs its header files, and users of the library must also see these (PUBLIC). (No change needed)

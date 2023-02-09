@@ -36,6 +36,12 @@ Efs::Efs::Efs(int argc, char** argv) {
     std::vector<std::string> v_cmd;
     std::string tmp;
     std::stringstream ss(cmd);
+
+    // if cmd is empty, just loop again
+    if (cmd.empty()) {
+      continue;
+    }
+
     while(getline(ss, tmp, ' ')) {
       v_cmd.push_back(tmp);
     }

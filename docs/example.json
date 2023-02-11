@@ -1,0 +1,24 @@
+// this file is the example for a user (user1) JSON file
+
+[
+  {
+    "/root/user1/robots.txt": {
+      "contents": "*\n /admin\n"
+    }
+  }
+
+]
+
+
+
+// this file is the example for the user's info (kept track by the program)
+[
+  "usera": {
+    "db_file": "0ab4h89183elkvrd", // this is the md5 sum of their db file
+    "public_key": "usera_public_key",
+  },
+  "userb": {
+    "db_file": "8v9ws12n3jkjasdnf", // this is the md5 sum of their db file
+    "public_key": "userb_public_key",
+  }
+]

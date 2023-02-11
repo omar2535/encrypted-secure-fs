@@ -8,12 +8,10 @@
 namespace Efs {
   class Crypto {
     public:
-      /**
-       * @brief Construct a new Crypto object
-       * Currently shouldn't do anything
-       */
       Crypto();
       std::string generateKey();
       bool validateKey();
+      void encryptFile(std::string public_key, std::string filepath);
+      void decryptFile(std::string private_key, std::string filepath);
   };
 }

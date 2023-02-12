@@ -7,7 +7,7 @@
 namespace Efs {
   class Filesystem {
     public:
-      Filesystem();
+      Filesystem(std::string filepath, std::string private_key);
       ~Filesystem();
 
       /* For Db.json */
@@ -22,5 +22,8 @@ namespace Efs {
 
       void doesFileExist(std::string filepath);
       void doesDirectoryExist(std::string dirpath);
+
+    private:
+      nlohmann::json json;
   };
 }

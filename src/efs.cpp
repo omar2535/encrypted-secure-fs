@@ -5,8 +5,22 @@
 
 #include <efs/efs.h>
 #include <efs/cli.h>
+#include <efs/database.h>
+#include <efs/admin.h>
 
 Efs::Efs::Efs(int argc, char** argv) {
+  // initial loop for admin creation and database creation
+  Database database;
+  if (!database.isDatabaseInitialized()) {
+    std::cout << "No initial database found! Initializing database and admin user" << std::endl;
+    Admin admin;
+    admin.initilizeAdmin();
+    std::cout << "Admin user created!" << std::endl;
+    // TODO: Run database initialization
+    return;
+  }
+
+
   // if keyfile not inputted, ask for keyfile
   if (argv[1] == NULL) {
     std::cout << "Please enter keyfile!" << std::endl;
@@ -21,7 +35,6 @@ Efs::Efs::Efs(int argc, char** argv) {
   // create a new CLI object
   CLI cli;
   std::string currentDir = "/";
-
 
   // TODO: Validate keyfile here to get who the current user is
   // TODO: Login as the current user and update the current dir

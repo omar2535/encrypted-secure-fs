@@ -1,16 +1,28 @@
 #include "efs/database.h"
 
 Efs::Database::Database() {
-  // create DB file if it doesn't exist yet
-  if (!std::filesystem::exists(this->DB_FILE)) {
-    std::ofstream output(this->DB_FILE);
-  }
+  // blank constructor
+}
 
+Efs::Database::~Database() {
+  // blank destructor
+}
+
+bool Efs::Database::isDatabaseInitialized() {
+  // the DB consists of two JSON files.
+  return (
+    std::filesystem::exists(this->SHARED_FILE) &&
+    std::filesystem::exists(this->USER_INFO_FILE)
+  );
+}
+
+void Efs::Database::initializeDatabase() {
+  // the DB consists of two JSON files.
   if (!std::filesystem::exists(this->SHARED_FILE)) {
     std::ofstream output(this->SHARED_FILE);
   }
 
-  if (!std::filesystem::exists(this->KEYS_FILE)) {
-    std::ofstream output(this->KEYS_FILE);
+  if (!std::filesystem::exists(this->USER_INFO_FILE)) {
+    std::ofstream output(this->USER_INFO_FILE);
   }
 }

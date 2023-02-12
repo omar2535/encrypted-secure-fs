@@ -1,7 +1,7 @@
 #include "efs/filesystem.h"
 
 
-Efs::Filesystem::Filesystem() {
+Efs::Filesystem::Filesystem(std::string filepath, std::string private_key) {
   // TODO
 }
 

@@ -1,11 +1,49 @@
 #include "efs/crypto.h"
 
-Efs::Crypto::Crypto() {
-  // TODO: If needed, use dependency injection
-}
+std::string Efs::Crypto::generateKeyPair(std::string username) {
+  std::string public_key_filename = username + "_public.pem";
+  std::string private_key_filename = username + "_private.pem";
 
-std::string Efs::Crypto::generateKey() {
-  // TODO: Generate a RSA key (?)
+
+  int ret = 0;
+  int bits = 2048;
+  RSA *rsa = NULL;
+  BIGNUM *bne = NULL;
+  BIO *bp_public = NULL;
+  BIO *bp_private = NULL;
+
+  unsigned long e = RSA_F4;
+
+  try {
+    // 1. Generate RSA key
+    bne = BN_new();
+    ret = BN_set_word(bne, e);
+    if (ret != 1) { throw; }
+
+    rsa = RSA_new();
+    ret = RSA_generate_key_ex(rsa, bits, bne, NULL);
+    if (ret != 1) { throw; }
+
+    // 2. Save the public key
+    bp_public = BIO_new_file(public_key_filename.c_str(), "w+");
+    ret = PEM_write_bio_RSAPublicKey(bp_public, rsa);
+    if (ret != 1) { throw; }
+
+    // 3. Save the private key
+    bp_private = BIO_new_file(private_key_filename.c_str(), "w+");
+    ret = PEM_write_bio_RSAPrivateKey(bp_private, rsa, NULL, NULL, 0, NULL, NULL);
+    if (ret != 1) { throw; }
+
+  } catch (int errorCode) {
+    std::cerr << "Unable to generate RSA Key" << std::endl;
+  }
+
+  // 4. free
+  BIO_free_all(bp_public);
+  BIO_free_all(bp_private);
+  RSA_free(rsa);
+  BN_free(bne);
+
   return "";
 }
 

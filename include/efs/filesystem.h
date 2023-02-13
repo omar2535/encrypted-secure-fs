@@ -7,7 +7,7 @@
 namespace Efs {
   class Filesystem {
     public:
-      Filesystem(std::string filepath, std::string private_key);
+      Filesystem(std::string username, std::string filepath, std::string private_key_filepath);
       ~Filesystem();
 
       /* For Db.json */
@@ -25,5 +25,10 @@ namespace Efs {
 
     private:
       nlohmann::json json;
+      std::string username;
+      std::string filepath;
+      std::string private_key_filepath;
+
+      void initializeNewFilesystem();
   };
 }

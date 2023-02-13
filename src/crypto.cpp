@@ -1,9 +1,8 @@
 #include "efs/crypto.h"
 
 std::string Efs::Crypto::generateKeyPair(std::string username) {
-  std::string public_key_filename = username + "_public.pem";
-  std::string private_key_filename = username + "_private.pem";
-
+  std::string public_key_filename = "db/" + username + "_public.pem";
+  std::string private_key_filename = "db/" + username + "_private.pem";
 
   int ret = 0;
   int bits = 2048;
@@ -43,7 +42,6 @@ std::string Efs::Crypto::generateKeyPair(std::string username) {
   BIO_free_all(bp_private);
   RSA_free(rsa);
   BN_free(bne);
-
   return "";
 }
 

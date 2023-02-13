@@ -2,3 +2,10 @@
 /.vscode
 /cpm_modules
 .DS_Store
+
+# Debugger
+.gdb_history
+
+
+# Application specific
+*.pem

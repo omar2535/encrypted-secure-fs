@@ -2,9 +2,16 @@
 
 ## ⌨️ Getting started
 
+**Cloning the repository:**
+
+```sh
+git clone https://github.com/omar2535/encrypted-secure-fs.git
+```
+
 **Installing required libraries:**
 
 ```sh
+sudo apt-get -y install cmake
 sudo apt-get install libssl-dev
 ```
 

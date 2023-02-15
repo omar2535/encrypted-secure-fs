@@ -12,6 +12,8 @@
   "120398123ahsdfsldko": "/userb/shared/userc/user.txt"
 }
 
+// /usera/personal/mypersonal/user.txt -> /userb/shared/usera/user.txt -> 120398123ahsdfsldkj
+
 // when you share file with same name from different folders, prompt telling user that
 // there's already a file shared with the same name. Change file name or overwrite.
 
@@ -31,6 +33,7 @@
 
 
 // shared json file (per program)
+// key on the left is the original file, on the right are all the duplicates
 [
   "12930j123najsndfasd": ["120398123ahsdfsldkj"],
   "asd1aa2r12rh98=-===": ["120398123ahsdfsldko"]

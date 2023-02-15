@@ -5,8 +5,15 @@
   "lj1n23uasd-f98w-f89": "/admin/personal/",
   "asdfasdf123asdfasdf": "/admin/shared/",
   "asdfn32389414134134": "/usera/personal/",
-  "12930j123najsndfasd": "/usera/personal/user.txt"
+  "12930j123najsndfasd": "/usera/personal/user.txt",
+  "aosdpfop12192031239": "/usera/personal/mypersonal/user.txt",
+  "asd1aa2r12rh98=-===": "/userc/personal/user.txt",
+  "120398123ahsdfsldkj": "/userb/shared/usera/user.txt",
+  "120398123ahsdfsldko": "/userb/shared/userc/user.txt"
 }
+
+// when you share file with same name from different folders, prompt telling user that
+// there's already a file shared with the same name. Change file name or overwrite.
 
 // -------------------------------------------------------
 
@@ -25,6 +32,6 @@
 
 // shared json file (per program)
 [
-  "usera": ["sharedfile1", "sharedfile2"],
-  "userb": ["sharedfile2", "sharedfile3"]
+  "12930j123najsndfasd": ["120398123ahsdfsldkj"],
+  "asd1aa2r12rh98=-===": ["120398123ahsdfsldko"]
 ]

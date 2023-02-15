@@ -1,15 +1,14 @@
 // this file is the example for a user (user1) JSON file
 
-[
-  {
-    "/root/user1/robots.txt": {
-      "contents": "*\n /admin\n"
-    }
-  }
+{
+  "askdljfnasldfjnasdf": "/admin/personal/root.txt",
+  "lj1n23uasd-f98w-f89": "/admin/personal/",
+  "asdfasdf123asdfasdf": "/admin/shared/",
+  "asdfn32389414134134": "/usera/personal/",
+  "12930j123najsndfasd": "/usera/personal/user.txt"
+}
 
-]
-
-
+// -------------------------------------------------------
 
 // this file is the example for the user's info (kept track by the program)
 [
@@ -21,4 +20,11 @@
     "db_file": "8v9ws12n3jkjasdnf", // this is a random unique string for their db file
     "public_key": "userb_public_key",
   }
+]
+
+
+// shared json file (per program)
+[
+  "usera": ["sharedfile1", "sharedfile2"],
+  "userb": ["sharedfile2", "sharedfile3"]
 ]

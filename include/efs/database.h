@@ -24,6 +24,7 @@ namespace Efs {
       void addSharedFileForUser(std::string username, std::string filepath);
 
     private:
+      std::string FILE_MAPPINGS_FILE = "File_mappings.json";
       std::string SHARED_FILE = "Shared.json";
       std::string USER_INFO_FILE = "user_info.json";
   };

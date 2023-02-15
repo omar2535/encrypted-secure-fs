@@ -10,15 +10,15 @@
 
 Efs::Efs::Efs(int argc, char** argv) {
   // initial loop for admin creation and database creation
-  Database database;
-  if (!database.isDatabaseInitialized()) {
-    std::cout << "No initial database found! Initializing database and admin user" << std::endl;
-    Admin admin;
-    admin.initilizeAdmin();
-    std::cout << "Admin user created!" << std::endl;
-    // TODO: Run database initialization
-    return;
-  }
+  // Database database;
+  // if (!database.isDatabaseInitialized()) {
+  //   std::cout << "No initial database found! Initializing database and admin user" << std::endl;
+  //   Admin admin;
+  //   admin.initilizeAdmin();
+  //   std::cout << "Admin user created!" << std::endl;
+  //   // TODO: Run database initialization
+  //   return;
+  // }
 
 
   // if keyfile not inputted, ask for keyfile

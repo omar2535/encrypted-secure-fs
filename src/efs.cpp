@@ -57,12 +57,6 @@ Efs::Efs::Efs(int argc, char** argv) {
   
     // Check commands
     if (v_cmd[0] == "cd") {
-      // if (v_cmd.size() != 2) {
-      //   std::cout << "Incorrect number of arguments!\n";
-      //   std::cout << "Usage: cd <directory>\n";
-      //   continue;
-      // }
-      // cli.cd(currentDir, v_cmd[1]);
       if (v_cmd.size() != 2) {
         std::cout << "Incorrect number of arguments!\n";
         std::cout << "Usage: cd <directory>\n";

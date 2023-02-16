@@ -9,15 +9,14 @@
 #include <efs/admin.h>
 
 Efs::Efs::Efs(int argc, char** argv) {
-  // initial loop for admin creation and database creation
   Database database;
 
-  //   Admin admin;
-  //   admin.initilizeAdmin();
-  //   std::cout << "Admin user created!" << std::endl;
-  //   // TODO: Run database initialization
-  //   return;
-
+  // initial check if admin user is there. If not then create the admin user
+  if (!database.doesUserExist("admin")) {
+    database.createUser("admin");
+    std::cout << "Created admin! Since this is first run, exiting!" << std::endl;
+    return;
+  }
 
   // if keyfile not inputted, ask for keyfile
   if (argv[1] == NULL) {

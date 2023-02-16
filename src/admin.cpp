@@ -2,13 +2,6 @@
 
 void Efs::Admin::initilizeAdmin() {
   this->initializeAdminKeyPair();
-  std::cout << "Initilized admin keypair" << std::endl;
-  this->initializeAdminFilesystem();
-
-  // TODO: Initialize the admin filesystem
-  // TODO: Initialize the admin entry in shared
-  // TODO: Initialize the admmin in DB
-  // TODO: Initialize the admin
 }
 
 

@@ -20,21 +20,27 @@
 // -------------------------------------------------------
 
 // this file is the example for the user's info (kept track by the program)
-[
+{
+  "admin": {
+    "personal_dir_hash": "355dc1a0279832226eabe284517ae26333a2f647c2798b28effb064c2f9ad063",
+    "public_key": "-----BEGIN RSA PUBLIC KEY-----\nMIIBCgKCAQEAqRyADMbakjiprejAd8EBbCq+0B98hjc0qleKKgYhXplENzi7uyCO\nLlkVsiOx8LCc5hpI53CDJrbtMnZUsfKmJNlnwQQBKzCvDhp7VbkSdqGCt907ezCD\nDdKqwmsPwx7p+8ggeG1SKUj8VsrnRs3eJBYRoDhrCa9tk3GlDulqSJbtd++tM51l\nhTjv5sB3wkpyIWKS8CfCzlUPOv9UKXh7ZOcGMDq3u0eC5SMFt6SwmMRfhaDuQqZU\ncHM48Kcw0f/1eK9lgVQjfI0nnwEZpNYh4tJWmiWgtYhjFX02gOGETqph0HvWPppO\nHPFX2WLARYQ8GR2CCug3MYpqlQ0zfdlliwIDAQAB\n-----END RSA PUBLIC KEY-----\n",
+    "root_dir_hash": "2f35349104488edfcc878999c17e0f8601268f4731cc98aaa3dcfc42e9e5f8b0",
+    "share_dir_hash": "9ef13945c9e8a96b5eaf917f81cf28459ebfeebb5d6514c2fb067dbcbb7cf97c"
+  },
   "usera": {
-    "db_file": "0ab4h89183elkvrd", // this is a random unique string for their db file
     "public_key": "usera_public_key",
+    ...
   },
   "userb": {
-    "db_file": "8v9ws12n3jkjasdnf", // this is a random unique string for their db file
     "public_key": "userb_public_key",
+    ...
   }
-]
+}
 
 
 // shared json file (per program)
 // key on the left is the original file, on the right are all the duplicates
-[
+{
   "12930j123najsndfasd": ["120398123ahsdfsldkj"],
   "asd1aa2r12rh98=-===": ["120398123ahsdfsldko"]
-]
+}

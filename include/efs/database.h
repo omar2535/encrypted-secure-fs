@@ -16,13 +16,14 @@ namespace Efs {
       void initializeDatabase();
 
       /* For File_mappings.json */
-      void addFile(std::string filepath);
+      std::string addFile(std::string filepath);
       void deleteFile(std::string filepath);
       std::string getFilepathFromSha256(std::string hash_string);
 
       /* For Users_info.json */
-      void addKeyToUser(std::string username, std::string key);
-      void getKeyByUser(std::string username);
+      void createUser(std::string username);
+      bool doesUserExist(std::string username);
+      std::string getPublicKeyForUser(std::string username);
 
       /* For Shared.json */
       std::vector<std::string> getSharedFilesForUser();

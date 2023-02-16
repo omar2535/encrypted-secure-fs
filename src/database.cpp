@@ -26,10 +26,12 @@ Efs::Database::~Database() {
 /* FOR FILE_MAPPINGS_FILE */
 
 // Add a file to the file_mappings.json by getting its SHA256 sum
-void Efs::Database::addFile(std::string filepath) {
+std::string Efs::Database::addFile(std::string filepath) {
   std::string hash_filepath = Crypto::getSha256ForString(filepath);
   this->file_mappings_json[hash_filepath] = filepath;
   this->saveDbState();
+
+  return hash_filepath;
 }
 
 // delete file from database
@@ -54,13 +56,58 @@ std::string Efs::Database::getFilepathFromSha256(std::string hash_string) {
 /* ------------------------------------- */
 
 /* ------------------------------------- */
+/* For Users_info.json */
+
+// create a new user
+// assumes user doesn't already exist
+void Efs::Database::createUser(std::string username) {
+  this->user_info_json[username] = {};
+  
+  // create their public key and private key
+  std::string public_key_filename = Crypto::generateKeyPair(username);
+  
+  // save the public key into the users_info.json
+  std::ifstream ifs(public_key_filename);
+  std::string public_key_contents((std::istreambuf_iterator<char>(ifs)),
+                                  (std::istreambuf_iterator<char>()));
+  
+  // save the public key under the user
+  this->user_info_json[username]["public_key"] = public_key_contents;
+
+  // initialize user's file mappings too
+  std::string user_root_dir_hash = this->addFile(username + "/");
+  std::string user_personal_dir_hash = this->addFile(username + "/personal/");
+  std::string user_share_dir_hash = this->addFile(username + "/shared/");
+
+  // save each of the directories under the user as well
+  this->user_info_json[username]["root_dir_hash"] = user_root_dir_hash;
+  this->user_info_json[username]["personal_dir_hash"] = user_personal_dir_hash;
+  this->user_info_json[username]["share_dir_hash"] = user_share_dir_hash;
+
+  // save the json contents into the file
+  this->saveDbState();
+}
+
+// check if the user exists
+bool Efs::Database::doesUserExist(std::string username) {
+  return this->user_info_json.contains(username);
+}
+
+// gets the key for the user
+std::string Efs::Database::getPublicKeyForUser(std::string username) {
+  try {
+    return this->user_info_json[username]["public_key"].get<std::string>();
+  } catch (nlohmann::json_abi_v3_11_2::detail::type_error error) {
+    // means the username doesn't exist, just return an empty string
+    return "";
+  }
+}
 
 
 
-
-
+// Checks if the database is initialized
+// the DB consists of three JSON files.
 bool Efs::Database::isDatabaseInitialized() {
-  // the DB consists of two JSON files.
   return (
     std::filesystem::exists(this->FILE_MAPPINGS_FILE) &&
     std::filesystem::exists(this->SHARED_FILE) &&

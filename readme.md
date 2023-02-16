@@ -13,6 +13,19 @@ git clone https://github.com/omar2535/encrypted-secure-fs.git
 ```sh
 sudo apt-get -y install cmake # for mac users do brew install cmake
 sudo apt-get -y install libssl-dev # for mac users do brew install openssl
+
+```
+Then for mac users to search `/usr/local/include` path when using `cmake`, 
+
+```sh
+ln -s /usr/local/opt/openssl/include/openssl /usr/local/include # link openssl lib to `/usr/local/include`
+vim  ~/.zshrc
+```
+and include the following:
+
+```sh
+export C_INCLUDE_PATH=/usr/local/include
+export CPLUS_INCLUDE_PATH=/usr/local/include
 ```
 
 **Configuring the project (only once):**

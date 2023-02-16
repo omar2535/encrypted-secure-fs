@@ -6,7 +6,6 @@
 #include <efs/efs.h>
 #include <efs/cli.h>
 #include <efs/database.h>
-#include <efs/admin.h>
 
 Efs::Efs::Efs(int argc, char** argv) {
   Database database;

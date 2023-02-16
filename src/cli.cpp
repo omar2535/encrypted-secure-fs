@@ -6,8 +6,6 @@
 #include <fstream>
 
 void Efs::CLI::cd(std::string currentDir, std::string targetDir) {
-  // TODO: Implement me!
-  std::cout << "TODO: IMPLEMENT ME!" << std::endl;
   // Normalize the target directory path by removing any redundant separators and resolving any relative paths
   targetDir = std::filesystem::path(targetDir).lexically_normal().string();
 
@@ -69,8 +67,6 @@ void Efs::CLI::cd(std::string currentDir, std::string targetDir) {
 
 
 void Efs::CLI::pwd(std::string currentDir) {
-  // TODO: Implement me!
-  std::cout << "TODO: IMPLEMENT ME!" << std::endl;
   std::cout << currentDir << std::endl;
   
   // Update m_currentDir to the current working directory
@@ -78,8 +74,6 @@ void Efs::CLI::pwd(std::string currentDir) {
 }
 
 void Efs::CLI::ls(std::string currentDir) {
-  // TODO: Implement me!
-  std::cout << "TODO: IMPLEMENT ME!" << std::endl;
   // Check if the current directory exists
   if (!std::filesystem::exists(currentDir)) {
     std::cout << "Invalid directory: " << currentDir << std::endl;
@@ -88,7 +82,6 @@ void Efs::CLI::ls(std::string currentDir) {
 
   // Resolve any symbolic links in the current directory
   std::filesystem::path dir_path = std::filesystem::canonical(currentDir);
-  std::cout << "m_currentDir = " << m_currentDir << std::endl;
 
   // List the contents of the directory
   for (const auto& entry : std::filesystem::directory_iterator(dir_path)) {
@@ -97,8 +90,6 @@ void Efs::CLI::ls(std::string currentDir) {
 }
 
 void Efs::CLI::cat(std::string currentDir, std::string filepath) {
-  // TODO: Implement me!
-  std::cout << "TODO: IMPLEMENT ME!" << std::endl;
   // Check if the file exists
   std::filesystem::path filePath = currentDir + "/" + filepath;
   if (!std::filesystem::exists(filePath)) {
@@ -126,8 +117,6 @@ void Efs::CLI::share(std::string currentDir, std::string filepath, std::string t
 }
 
 void Efs::CLI::mkdir(std::string currentDir, std::string dirpath) {
-  // TODO: Implement me!
-  std::cout << "TODO: IMPLEMENT ME!" << std::endl;
   // Normalize the directory path by removing any redundant separators and resolving any relative paths
   dirpath = std::filesystem::path(dirpath).lexically_normal().string();
 

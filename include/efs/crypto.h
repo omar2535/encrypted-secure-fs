@@ -9,8 +9,9 @@
 #include <openssl/err.h> /* errors */
 #include <openssl/ssl.h> /* core library */
 #include <iostream>
-#include <fstream>
+#include <iomanip>
 #include <sstream>
+#include <string>
 
 #include <cassert>
 #define ASSERT assert
@@ -21,6 +22,7 @@ namespace Efs {
   class Crypto {
     public:
       static std::string generateKeyPair(std::string username);
+      static std::string getSha256ForString(std::string inputstring);
       static bool validateKey();
       static void encryptFile(std::string public_key, std::string filepath);
       static void decryptFile(std::string private_key, std::string filepath);

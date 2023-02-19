@@ -142,9 +142,9 @@ void Efs::Crypto::encryptFile(std::string public_key, std::string filepath) {
   std::string plaintext((std::istreambuf_iterator<char>(infile)),
                             std::istreambuf_iterator<char>());
   if (infile.fail() && !infile.eof()) {
-        std::cerr << "Error: Failed to read data from file '" << filepath << "'" << std::endl;
-        infile.close();
-        return;
+    std::cerr << "Error: Failed to read data from file '" << filepath << "'" << std::endl;
+    infile.close();
+    return;
   }
   infile.close();
 
@@ -154,8 +154,8 @@ void Efs::Crypto::encryptFile(std::string public_key, std::string filepath) {
   // write file
   std::ofstream outfile(filepath, std::ios::trunc);
   if (!outfile) {
-      std::cerr << "Error: Could not open file '" << filepath << "'" << std::endl;
-      return;
+    std::cerr << "Error: Could not open file '" << filepath << "'" << std::endl;
+    return;
   }
   outfile << ciphertext;
   if (outfile.fail()) {
@@ -165,8 +165,8 @@ void Efs::Crypto::encryptFile(std::string public_key, std::string filepath) {
   }
   outfile.close();
   if (outfile.fail()) {
-      std::cerr << "Error: Failed to close file '" << ciphertext << "'" << std::endl;
-      return;
+    std::cerr << "Error: Failed to close file '" << ciphertext << "'" << std::endl;
+    return;
   }
 }
 
@@ -180,9 +180,9 @@ std::string Efs::Crypto::decryptFile(std::string private_key, std::string filepa
   std::string ciphertext((std::istreambuf_iterator<char>(infile)),
                             std::istreambuf_iterator<char>());
   if (infile.fail() && !infile.eof()) {
-        std::cerr << "Error: Failed to read data from file '" << filepath << "'" << std::endl;
-        infile.close();
-        throw std::runtime_error("Error reading file");
+    std::cerr << "Error: Failed to read data from file '" << filepath << "'" << std::endl;
+    infile.close();
+    throw std::runtime_error("Error reading file");
   }
   infile.close();
   return decryptContent(private_key, ciphertext);

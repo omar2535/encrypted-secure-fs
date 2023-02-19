@@ -12,7 +12,7 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
-
+#include <fstream>
 #include <cassert>
 #define ASSERT assert
 
@@ -23,8 +23,10 @@ namespace Efs {
     public:
       static std::string generateKeyPair(std::string username);
       static std::string getSha256ForString(std::string inputstring);
-      static bool validateKey();
+      static std::string encryptContent(std::string public_key, std::string plaintext);
+      static std::string decryptContent(std::string private_key, std::string ciphertext);
+      static bool validatePrivateKey(std::string privateKeyStr, std::string publicKeyStr);
       static void encryptFile(std::string public_key, std::string filepath);
-      static void decryptFile(std::string private_key, std::string filepath);
+      static std::string decryptFile(std::string private_key, std::string filepath);
   };
 }

@@ -24,6 +24,7 @@ namespace Efs {
       void createUser(std::string username);
       bool doesUserExist(std::string username);
       std::string getPublicKeyForUser(std::string username);
+      std::string getUsernameByPrivateKey(std::string private_key);
 
       /* For Shared.json */
       std::vector<std::string> getSharedFilesForUser();

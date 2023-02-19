@@ -28,6 +28,7 @@ brew install cmake
 brew install openssl
 
 ln -s /usr/local/opt/openssl/include/openssl /usr/local/include # link openssl lib to `/usr/local/include`
+echo "export OPENSSL_ROOT_DIR=/usr/local/opt/openssl" >> ~/.zshrc
 echo "export C_INCLUDE_PATH=/usr/local/include" >> ~/.zshrc
 echo "export CPLUS_INCLUDE_PATH=/usr/local/include" >> ~/.zshrc
 ```

@@ -93,7 +93,7 @@ bool Efs::Database::doesUserExist(std::string username) {
   return this->user_info_json.contains(username);
 }
 
-// gets the key for the user
+// get the key for the user
 std::string Efs::Database::getPublicKeyForUser(std::string username) {
   try {
     return this->user_info_json[username]["public_key"].get<std::string>();
@@ -103,6 +103,15 @@ std::string Efs::Database::getPublicKeyForUser(std::string username) {
   }
 }
 
+// get username by private key
+std::string Efs::Database::getUsernameByPrivateKey(std::string private_key) {
+  for (auto& [username, obj] : this->user_info_json.items()) {
+    if (Crypto::validatePrivateKey(private_key, obj["public_key"])) {
+      return username;
+    }
+  }
+  return "";
+}
 
 
 // Checks if the database is initialized

@@ -7,6 +7,7 @@
 #include <efs/efs.h>
 #include <efs/cli.h>
 #include <efs/database.h>
+#include <efs/login.h>
 
 Efs::Efs::Efs(int argc, char** argv) {
   Database database;
@@ -32,27 +33,9 @@ Efs::Efs::Efs(int argc, char** argv) {
   // create a new CLI object
   CLI cli;
   std::string currentDir = "/";
-  std::string currentUser;
-
-  // Open and read the key file
-  std::ifstream infile(keyfile_name);
-  if (!infile) {
-    std::cerr << "Error: Could not open key file '" << keyfile_name << "'" << std::endl;
-    return;
-  }
-  std::string privateKeyStr((std::istreambuf_iterator<char>(infile)),
-                            std::istreambuf_iterator<char>());
-  if (infile.fail() && !infile.eof()) {
-    std::cerr << "Error: Failed to read data from file '" << keyfile_name << "'" << std::endl;
-    infile.close();
-    return;
-  }
-  infile.close();
-  
-  // Validate keyfile to get who the current user is
-  currentUser = database.getUsernameByPrivateKey(privateKeyStr);
-  if (currentDir == "") {
-    std::cout << "No record found!" << std::endl;
+  std::string currentUser = loginUser(keyfile_name, database);
+  if (currentUser.empty()) {
+    std::cout << "User not found!" << std::endl;
     return;
   } else {
     std::cout << "Welcome back, " + currentUser + "!" << std::endl;

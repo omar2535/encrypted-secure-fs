@@ -70,26 +70,7 @@ Efs::Efs::Efs(int argc, char** argv) {
         std::cout << "Usage: cd <directory>\n";
         continue;
       }
-
-      // declare and initialize targetDir
-      std::string targetDir;
-
-      // get target directory from command line arguments
-      if (v_cmd[1][0] == '/') {
-        targetDir = v_cmd[1];
-      } else {
-        targetDir = currentDir + "/" + v_cmd[1];
-      }
-
-      // check whether target directory exists
-      if (!std::filesystem::exists(targetDir)) {
-        std::cout << "Directory does not exist\n";
-        continue;
-      }
-
-      // normalize target directory path
-      targetDir = std::filesystem::path(targetDir).lexically_normal().string();
-      currentDir = targetDir;
+      currentDir = cli.cd(currentDir, v_cmd[1]);
     } else if (v_cmd[0] == "pwd") {
       if (v_cmd.size() != 1) {
         std::cout << "Incorrect number of arguments!\n";

@@ -2,10 +2,12 @@
 #include <iostream>
 #include <vector>
 #include <assert.h>
+#include <fstream>
 
 #include <efs/efs.h>
 #include <efs/cli.h>
 #include <efs/database.h>
+#include <efs/login.h>
 
 Efs::Efs::Efs(int argc, char** argv) {
   Database database;
@@ -31,8 +33,14 @@ Efs::Efs::Efs(int argc, char** argv) {
   // create a new CLI object
   CLI cli;
   std::string currentDir = "/";
+  std::string currentUser = loginUser(keyfile_name, database);
+  if (currentUser.empty()) {
+    std::cout << "User not found!" << std::endl;
+    return;
+  } else {
+    std::cout << "Welcome back, " + currentUser + "!" << std::endl;
+  }
 
-  // TODO: Validate keyfile here to get who the current user is
   // TODO: Login as the current user and update the current dir
 
   // main loop

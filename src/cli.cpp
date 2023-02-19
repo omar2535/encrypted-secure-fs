@@ -1,17 +1,24 @@
 #include <efs/cli.h>
+#include <efs/efs.h>
 #include <iostream>
 #include <sstream>
 #include <vector>
 #include <filesystem>
 #include <fstream>
 
-void Efs::CLI::cd(std::string currentDir, std::string targetDir) {
+std::string Efs::CLI::cd(std::string currentDir, std::string targetDir) {
+  // Check if the target directory is an absolute path or a relative path
+  if (targetDir[0] != '/') {
+    // Target directory is a relative path, so add the current directory to the beginning
+    targetDir = currentDir + "/" + targetDir;
+  }
+
   // Normalize the target directory path by removing any redundant separators and resolving any relative paths
   targetDir = std::filesystem::path(targetDir).lexically_normal().string();
+  currentDir = targetDir;
 
-  // Check if the target directory is an absolute path or a relative path
+  // Set the current directory to the root directory of the system if the target directory is an absolute path
   if (targetDir[0] == '/') {
-    // Target directory is an absolute path, so set the current directory to the root directory of the system
     m_currentDir = "/";
   }
 
@@ -36,7 +43,7 @@ void Efs::CLI::cd(std::string currentDir, std::string targetDir) {
     // Check if the current directory is valid
     if (!std::filesystem::is_directory(m_currentDir)) {
       std::cout << "Invalid directory: " << m_currentDir << std::endl;
-      return;
+      return "";
     }
 
     // Try to move to the target directory
@@ -46,20 +53,19 @@ void Efs::CLI::cd(std::string currentDir, std::string targetDir) {
       m_currentDir = newPath.string();
     } else if (!std::filesystem::exists(newPath)) {
       std::cout << "Directory does not exist: " << component << std::endl;
-      return;
+      return "";
     } else {
       std::cout << "Path is not a directory: " << component << std::endl;
-      return;
+      return "";
     }
   }
 
   // Check if the target directory exists
   if (!std::filesystem::is_directory(m_currentDir)) {
     std::cout << "Directory does not exist: " << targetDir << std::endl;
-    return;
+    return "";
   }
-
-  std::cout << "m_currentDir = " << m_currentDir << std::endl;
+  return m_currentDir;
 }
 
 

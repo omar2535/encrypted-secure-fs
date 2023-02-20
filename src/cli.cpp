@@ -162,14 +162,16 @@ void Efs::CLI::mkfile(std::string currentUser, std::string r_currentDir,
     // 2. Construct the actual filepath on the operating system
     std::string r_filepath = r_currentDir + r_filename;
     
-    // 2. On operating system, create the file in the current directory 
+    // 3. On operating system, create the file in the current directory 
     //    with the hashed filename
     std::ofstream outfile(r_filepath);
     outfile << contents << std::endl;
     outfile.close();
 
-    // 3. Encrypt the file
+    // 4. Encrypt the file
     Crypto::encryptFile(public_key, r_filepath);
+
+    // 5. Print out success
     std::cout << "Created file: " << v_filename << std::endl;
   }
 }

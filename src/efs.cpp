@@ -3,6 +3,7 @@
 #include <vector>
 #include <assert.h>
 #include <fstream>
+#include <filesystem>
 
 #include <efs/efs.h>
 #include <efs/cli.h>
@@ -32,7 +33,7 @@ Efs::Efs::Efs(int argc, char** argv) {
   /* KEEP TRACK OF VARIABLES HERE */
   // create a new CLI object
   CLI cli;
-  std::string currentDir = "/";
+  std::string currentDir = std::filesystem::current_path();
   std::string currentUser = loginUser(keyfile_name, database);
   if (currentUser.empty()) {
     std::cout << "User not found!" << std::endl;

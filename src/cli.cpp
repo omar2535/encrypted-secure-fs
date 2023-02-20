@@ -67,10 +67,6 @@ std::string Efs::CLI::cd(std::string currentDir, std::string targetDir) {
   return m_currentDir;
 }
 
-
-
-
-
 void Efs::CLI::pwd(std::string currentDir) {
   std::cout << currentDir << std::endl;
   

@@ -9,7 +9,8 @@ namespace Efs {
       void ls(std::string currentDir);
       void cat(std::string currentDir, std::string filepath);
       void share(std::string currentDir, std::string filepath, std::string targetuser);
-      void mkdir(std::string currentDir, std::string dirpath);
+      void mkdir(std::string currentUser, std::string r_currentDir,
+                      std::string v_currentDir, std::string v_dirname);
       void mkfile(std::string currentUser, std::string r_currentDir,
                   std::string v_currentDir, std::string v_filename, 
                   std::string contents);

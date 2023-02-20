@@ -34,6 +34,14 @@ std::string Efs::Database::addFile(std::string filepath) {
   return hash_filepath;
 }
 
+std::string Efs::Database::addDir(std::string Dirpath) {
+  std::string hash_Dirpath = Crypto::getSha256ForString(Dirpath);
+  this->file_mappings_json[hash_Dirpath] = Dirpath;
+  this->saveDbState();
+
+  return hash_Dirpath;
+}
+
 // delete file from database
 void Efs::Database::deleteFile(std::string filepath) {
   std::string hash_filepath = Crypto::getSha256ForString(filepath);
@@ -57,6 +65,11 @@ std::string Efs::Database::getFilepathFromSha256(std::string hash_string) {
 bool Efs::Database::doesFileExist(std::string filepath) {
   std::string file_hash = Crypto::getSha256ForString(filepath);
   return this->getFilepathFromSha256(file_hash) != "";
+}
+
+bool Efs::Database::doesDirExist(std::string Dirpath) {
+  std::string Dir_hash = Crypto::getSha256ForString(Dirpath);
+  return this->getFilepathFromSha256(Dirpath) != "";
 }
 
 

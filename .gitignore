@@ -10,3 +10,5 @@
 # Application specific
 *.pem
 *.json
+
+userabc/

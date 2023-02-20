@@ -34,9 +34,9 @@ std::string Efs::Database::addFile(std::string filepath) {
   return hash_filepath;
 }
 
-std::string Efs::Database::addDir(std::string Dirpath) {
-  std::string hash_Dirpath = Crypto::getSha256ForString(Dirpath);
-  this->file_mappings_json[hash_Dirpath] = Dirpath;
+std::string Efs::Database::addDir(std::string dirpath) {
+  std::string hash_Dirpath = Crypto::getSha256ForString(dirpath);
+  this->file_mappings_json[hash_Dirpath] = dirpath;
   this->saveDbState();
 
   return hash_Dirpath;

@@ -4,7 +4,7 @@ namespace Efs {
   class CLI {
     public:
       std::string m_currentDir;
-      void cd(std::string currentDir, std::string targetDir);
+      std::string cd(std::string currentDir, std::string targetDir);
       void pwd(std::string currentDir);
       void ls(std::string currentDir);
       void cat(std::string currentDir, std::string filepath);

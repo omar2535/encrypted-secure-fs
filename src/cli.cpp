@@ -6,6 +6,8 @@
 #include <vector>
 #include <filesystem>
 #include <fstream>
+#include <stdlib.h>
+#include <dirent.h>
 
 std::string Efs::CLI::cd(std::string currentDir, std::string targetDir) {
   // Check if the target directory is an absolute path or a relative path
@@ -73,25 +75,29 @@ std::string Efs::CLI::cd(std::string currentDir, std::string targetDir) {
 
 void Efs::CLI::pwd(std::string currentDir) {
   std::cout << currentDir << std::endl;
-  
+
   // Update m_currentDir to the current working directory
   m_currentDir = currentDir;
 }
 
 void Efs::CLI::ls(std::string currentDir) {
   // Check if the current directory exists
-  if (!std::filesystem::exists(currentDir)) {
-    std::cout << "Invalid directory: " << currentDir << std::endl;
-    return;
-  }
+	if (!std::filesystem::exists(currentDir)) {
+		std::cout << "Invalid directory: " << currentDir << std::endl;
+		return;
+	}
 
-  // Resolve any symbolic links in the current directory
-  std::filesystem::path dir_path = std::filesystem::canonical(currentDir);
+	struct dirent **namelist;
+	int n=scandir(".", &namelist, NULL, alphasort);;
+	int i=0;
 
-  // List the contents of the directory
-  for (const auto& entry : std::filesystem::directory_iterator(dir_path)) {
-    std::cout << entry.path() << std::endl;
-  }
+	// print all the files and directories within directory */
+	while (n--) {
+		std::cout << namelist[i]->d_name << std::endl;
+		i++;
+		free(namelist[n]);
+	}
+	free(namelist);
 }
 
 void Efs::CLI::cat(std::string currentDir, std::string filepath) {
@@ -156,13 +162,13 @@ void Efs::CLI::mkfile(std::string currentUser, std::string r_currentDir,
     // TODO: Replace new file
     // TODO: Re-share with all shared users
   } else {
-    // 1. Register file to database    
+    // 1. Register file to database
     std::string r_filename = database.addFile(v_filepath);
 
     // 2. Construct the actual filepath on the operating system
     std::string r_filepath = r_currentDir + r_filename;
-    
-    // 3. On operating system, create the file in the current directory 
+
+    // 3. On operating system, create the file in the current directory
     //    with the hashed filename
     std::ofstream outfile(r_filepath);
     outfile << contents << std::endl;

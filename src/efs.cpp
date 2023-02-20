@@ -16,6 +16,7 @@ Efs::Efs::Efs(int argc, char** argv) {
   // initial check if admin user is there. If not then create the admin user
   if (!database.doesUserExist("admin")) {
     database.createUser("admin");
+    // TODO: Create admin initial folders (/admin/personal) and (/admin/shared)
     std::cout << "Created admin! Since this is first run, exiting!" << std::endl;
     return;
   }
@@ -33,7 +34,8 @@ Efs::Efs::Efs(int argc, char** argv) {
   /* KEEP TRACK OF VARIABLES HERE */
   // create a new CLI object
   CLI cli;
-  std::string currentDir = std::filesystem::current_path();
+  std::string r_currentDir = (std::string) std::filesystem::current_path(); // TODO: Change this to user's home dir (hashed)
+  std::string v_currentDir = "/admin"; // TODO: Change this to the user's home dir
   std::string currentUser = loginUser(keyfile_name, database);
   if (currentUser.empty()) {
     std::cout << "User not found!" << std::endl;
@@ -71,49 +73,49 @@ Efs::Efs::Efs(int argc, char** argv) {
         std::cout << "Usage: cd <directory>\n";
         continue;
       }
-      currentDir = cli.cd(currentDir, v_cmd[1]);
+      r_currentDir = cli.cd(r_currentDir, v_cmd[1]);
     } else if (v_cmd[0] == "pwd") {
       if (v_cmd.size() != 1) {
         std::cout << "Incorrect number of arguments!\n";
         std::cout << "Usage: pwd\n";
         continue;
       }
-      cli.pwd(currentDir);
+      cli.pwd(r_currentDir);
     } else if (v_cmd[0] == "ls") {
       if (v_cmd.size() != 1) {
         std::cout << "Incorrect number of arguments!\n";
         std::cout << "Usage: ls\n";
         continue;
       }
-      cli.ls(currentDir);
+      cli.ls(r_currentDir);
     } else if (v_cmd[0] == "cat") {
       if (v_cmd.size() != 2) {
         std::cout << "Incorrect number of arguments!\n";
         std::cout << "Usage: cat <filename>\n";
         continue;
       }
-      cli.cat(currentDir, v_cmd[1]);
+      cli.cat(r_currentDir, v_cmd[1]);
     } else if (v_cmd[0] == "share") {
       if (v_cmd.size() != 3) {
         std::cout << "Incorrect number of arguments!\n";
         std::cout << "Usage: share <filename> <username>\n";
         continue;
       }
-      cli.share(currentDir, v_cmd[1], v_cmd[2]);
+      cli.share(r_currentDir, v_cmd[1], v_cmd[2]);
     } else if (v_cmd[0] == "mkdir") {
       if (v_cmd.size() != 2) {
         std::cout << "Incorrect number of arguments!\n";
         std::cout << "Usage: mkdir <directory>\n";
         continue;
       }
-      cli.mkdir(currentDir, v_cmd[1]);
+      cli.mkdir(r_currentDir, v_cmd[1]);
     } else if (v_cmd[0] == "mkfile") {
       if (v_cmd.size() != 3) {
         std::cout << "Incorrect number of arguments!\n";
         std::cout << "Usage: mkfile <filename> <contents>\n";
         continue;
       }
-      cli.mkfile(currentDir, v_cmd[1], v_cmd[2]);
+      cli.mkfile(currentUser, r_currentDir, v_currentDir, v_cmd[1], v_cmd[2]);
     } else if (v_cmd[0] == "exit") {
       std::cout << "Exiting" << std::endl;
       return;

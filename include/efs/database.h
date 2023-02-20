@@ -19,6 +19,8 @@ namespace Efs {
       std::string addFile(std::string filepath);
       void deleteFile(std::string filepath);
       std::string getFilepathFromSha256(std::string hash_string);
+      bool doesFileExist(std::string filepath);
+
 
       /* For Users_info.json */
       void createUser(std::string username);

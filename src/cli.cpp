@@ -1,4 +1,6 @@
 #include <efs/cli.h>
+#include <efs/database.h>
+
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -64,6 +66,8 @@ std::string Efs::CLI::cd(std::string currentDir, std::string targetDir) {
     std::cout << "Directory does not exist: " << targetDir << std::endl;
     return "";
   }
+
+
   return m_currentDir;
 }
 
@@ -131,7 +135,43 @@ void Efs::CLI::mkdir(std::string currentDir, std::string dirpath) {
   }
 }
 
-void Efs::CLI::mkfile(std::string currentDir, std::string filepath, std::string contents) {
-  // TODO: Implement me!
-  std::cout << "TODO: IMPLEMENT ME!" << std::endl;
+// makes the file with the given contents
+// if already exists, overwrite the file and re-share with all shared users
+void Efs::CLI::mkfile(std::string currentUser, std::string r_currentDir,
+                      std::string v_currentDir, std::string v_filename,
+                      std::string contents) {
+  // make sure all dir names end with slash
+  if (v_currentDir.back() != '/') v_currentDir += "/";
+  if (r_currentDir.back() != '/') r_currentDir += "/";
+
+  // set some initial variables
+  Database database;
+  std::string v_filepath = v_currentDir + v_filename;
+  std::string public_key = database.getPublicKeyForUser(currentUser);
+
+  // cases: if file already exists and if it doesn't
+  if (database.doesFileExist(v_filepath)) {
+    // TODO: Remove old file
+    // TODO: Replace new file
+    // TODO: Re-share with all shared users
+  } else {
+    // 1. Register file to database    
+    std::string r_filename = database.addFile(v_filepath);
+
+    // 2. Construct the actual filepath on the operating system
+    std::string r_filepath = r_currentDir + r_filename;
+    
+    // 2. On operating system, create the file in the current directory 
+    //    with the hashed filename
+    std::ofstream outfile(r_filepath);
+    outfile << contents << std::endl;
+    outfile.close();
+
+    std::cout << r_filepath;
+
+    // 3. Encrypt the file
+    Crypto::encryptFile(public_key, r_filepath);
+
+    std::cout << "Created file : " << v_filename << std::endl;
+  }
 }

@@ -151,6 +151,7 @@ void Efs::CLI::mkfile(std::string currentUser, std::string r_currentDir,
 
   // cases: if file already exists and if it doesn't
   if (database.doesFileExist(v_filepath)) {
+    std::cout << "File already exists" << std::endl;
     // TODO: Remove old file
     // TODO: Replace new file
     // TODO: Re-share with all shared users
@@ -167,11 +168,8 @@ void Efs::CLI::mkfile(std::string currentUser, std::string r_currentDir,
     outfile << contents << std::endl;
     outfile.close();
 
-    std::cout << r_filepath;
-
     // 3. Encrypt the file
     Crypto::encryptFile(public_key, r_filepath);
-
-    std::cout << "Created file : " << v_filename << std::endl;
+    std::cout << "Created file: " << v_filename << std::endl;
   }
 }

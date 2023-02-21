@@ -1,14 +1,4 @@
 #include <efs/cli.h>
-#include <efs/database.h>
-
-#include <iostream>
-#include <sstream>
-#include <vector>
-#include <filesystem>
-#include <fstream>
-#include <stdlib.h>
-#include <dirent.h>
-#include <sys/stat.h>
 
 std::string Efs::CLI::cd(std::string currentDir, std::string targetDir) {
   // Check if the target directory is an absolute path or a relative path
@@ -163,23 +153,23 @@ void Efs::CLI::share(std::string currentDir, std::string filepath, std::string t
 }
 
 void Efs::CLI::mkdir(std::string currentUser, std::string r_currentDir,
-                      std::string v_currentDir, std::string v_dirname) {
+                     std::string v_currentDir, std::string v_dirname,
+                     Database* database) {
   // make sure all dir names end with slash
   if (v_currentDir.back() != '/') v_currentDir += "/";
   if (r_currentDir.back() != '/') r_currentDir += "/";
 
   // set some initial variables
-  Database database;
   std::string v_dirpath = v_currentDir + v_dirname;
-  std::string public_key = database.getPublicKeyForUser(currentUser);
+  std::string public_key = database->getPublicKeyForUser(currentUser);
 
   // cases: if directory already exists and if it doesn't
-  if (database.doesDirExist(v_dirpath)) {
+  if (database->doesDirExist(v_dirpath)) {
     std::cout << "Directory already exists" << std::endl;
   } else {
     // 1. Register directory to database and encrypt the directory path 
     //    with the current user's public key
-    std::string r_dirname = database.addDir(v_dirpath);
+    std::string r_dirname = database->addDir(v_dirpath);
 
     // 2. Construct the actual path of the directory on the operating system
     std::string r_dirpath = r_currentDir + r_dirname;
@@ -197,25 +187,24 @@ void Efs::CLI::mkdir(std::string currentUser, std::string r_currentDir,
 // if already exists, overwrite the file and re-share with all shared users
 void Efs::CLI::mkfile(std::string currentUser, std::string r_currentDir,
                       std::string v_currentDir, std::string v_filename,
-                      std::string contents) {
+                      std::string contents, Database* database) {
   // make sure all dir names end with slash
   if (v_currentDir.back() != '/') v_currentDir += "/";
   if (r_currentDir.back() != '/') r_currentDir += "/";
 
   // set some initial variables
-  Database database;
   std::string v_filepath = v_currentDir + v_filename;
-  std::string public_key = database.getPublicKeyForUser(currentUser);
+  std::string public_key = database->getPublicKeyForUser(currentUser);
 
   // cases: if file already exists and if it doesn't
-  if (database.doesFileExist(v_filepath)) {
+  if (database->doesFileExist(v_filepath)) {
     std::cout << "File already exists" << std::endl;
     // TODO: Remove old file
     // TODO: Replace new file
     // TODO: Re-share with all shared users
   } else {
     // 1. Register file to database
-    std::string r_filename = database.addFile(v_filepath);
+    std::string r_filename = database->addFile(v_filepath);
 
     // 2. Construct the actual filepath on the operating system
     std::string r_filepath = r_currentDir + r_filename;

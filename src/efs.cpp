@@ -108,14 +108,14 @@ Efs::Efs::Efs(int argc, char** argv) {
         std::cout << "Usage: mkdir <directory>\n";
         continue;
       }
-      cli.mkdir(currentUser, r_currentDir, v_currentDir, v_cmd[1]);
+      cli.mkdir(currentUser, r_currentDir, v_currentDir, v_cmd[1], &database);
     } else if (v_cmd[0] == "mkfile") {
       if (v_cmd.size() != 3) {
         std::cout << "Incorrect number of arguments!\n";
         std::cout << "Usage: mkfile <filename> <contents>\n";
         continue;
       }
-      cli.mkfile(currentUser, r_currentDir, v_currentDir, v_cmd[1], v_cmd[2]);
+      cli.mkfile(currentUser, r_currentDir, v_currentDir, v_cmd[1], v_cmd[2], &database);
     } else if (v_cmd[0] == "exit") {
       std::cout << "Exiting" << std::endl;
       return;

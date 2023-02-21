@@ -17,9 +17,11 @@ namespace Efs {
 
       /* For File_mappings.json */
       std::string addFile(std::string filepath);
+      std::string addDir(std::string dirpath);
       void deleteFile(std::string filepath);
       std::string getFilepathFromSha256(std::string hash_string);
       bool doesFileExist(std::string filepath);
+      bool doesDirExist(std::string dirpath);
 
 
       /* For Users_info.json */

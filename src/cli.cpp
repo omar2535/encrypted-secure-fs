@@ -162,17 +162,34 @@ void Efs::CLI::share(std::string currentDir, std::string filepath, std::string t
   std::cout << "TODO: IMPLEMENT ME!" << std::endl;
 }
 
-void Efs::CLI::mkdir(std::string currentDir, std::string dirpath) {
-  // Normalize the directory path by removing any redundant separators and resolving any relative paths
-  dirpath = std::filesystem::path(dirpath).lexically_normal().string();
+void Efs::CLI::mkdir(std::string currentUser, std::string r_currentDir,
+                      std::string v_currentDir, std::string v_dirname) {
+  // make sure all dir names end with slash
+  if (v_currentDir.back() != '/') v_currentDir += "/";
+  if (r_currentDir.back() != '/') r_currentDir += "/";
 
-  // Construct the directory path relative to the current directory
-  std::filesystem::path newDir = std::filesystem::path(currentDir) / dirpath;
+  // set some initial variables
+  Database database;
+  std::string v_dirpath = v_currentDir + v_dirname;
+  std::string public_key = database.getPublicKeyForUser(currentUser);
 
-  // Try to create the directory
-  if (!std::filesystem::create_directory(newDir)) {
-    std::cout << "Could not create directory: " << dirpath << std::endl;
-    return;
+  // cases: if directory already exists and if it doesn't
+  if (database.doesDirExist(v_dirpath)) {
+    std::cout << "Directory already exists" << std::endl;
+  } else {
+    // 1. Register directory to database and encrypt the directory path 
+    //    with the current user's public key
+    std::string r_dirname = database.addDir(v_dirpath);
+
+    // 2. Construct the actual path of the directory on the operating system
+    std::string r_dirpath = r_currentDir + r_dirname;
+
+    // 3. On operating system, create the directory in the current directory
+    //    with the hashed directory name
+    std::filesystem::create_directory(r_dirpath);
+
+    // 4. Print out success
+    std::cout << "Created directory: " << v_dirname << std::endl;
   }
 }
 

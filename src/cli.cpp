@@ -136,7 +136,8 @@ void Efs::CLI::mkdir(std::string currentUser, std::string r_currentDir,
   if (database.doesDirExist(v_dirpath)) {
     std::cout << "Directory already exists" << std::endl;
   } else {
-    // 1. Register directory to database
+    // 1. Register directory to database and encrypt the directory path 
+    //    with the current user's public key
     std::string r_dirname = database.addDir(v_dirpath);
 
     // 2. Construct the actual path of the directory on the operating system
@@ -146,10 +147,7 @@ void Efs::CLI::mkdir(std::string currentUser, std::string r_currentDir,
     //    with the hashed directory name
     std::filesystem::create_directory(r_dirpath);
 
-    // 4. Encrypt the directory path with the current user's public key
-    std::string encrypted_dirpath = Crypto::encryptContent(public_key, r_dirpath);
-
-    // 5. Print out success
+    // 4. Print out success
     std::cout << "Created directory: " << v_dirname << std::endl;
   }
 }

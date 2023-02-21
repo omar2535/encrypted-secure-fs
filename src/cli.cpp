@@ -6,6 +6,9 @@
 #include <vector>
 #include <filesystem>
 #include <fstream>
+#include <stdlib.h>
+#include <dirent.h>
+#include <sys/stat.h>
 
 std::string Efs::CLI::cd(std::string currentDir, std::string targetDir) {
   // Check if the target directory is an absolute path or a relative path
@@ -73,25 +76,63 @@ std::string Efs::CLI::cd(std::string currentDir, std::string targetDir) {
 
 void Efs::CLI::pwd(std::string currentDir) {
   std::cout << currentDir << std::endl;
-  
+
   // Update m_currentDir to the current working directory
   m_currentDir = currentDir;
 }
 
 void Efs::CLI::ls(std::string currentDir) {
-  // Check if the current directory exists
-  if (!std::filesystem::exists(currentDir)) {
-    std::cout << "Invalid directory: " << currentDir << std::endl;
-    return;
+  DIR* dir;
+  struct dirent* ent;
+  struct stat fileStat;
+  std::vector<std::string> entries;
+
+  dir = opendir(currentDir.c_str());
+  if (dir == nullptr) {
+    std::cerr << "Error: unable to open directory" << std::endl;
   }
 
-  // Resolve any symbolic links in the current directory
-  std::filesystem::path dir_path = std::filesystem::canonical(currentDir);
+  while ((ent = readdir(dir)) != nullptr) {
+    // Get information about the file system entry
+    std::string entryPath = std::string(currentDir.c_str()) + "/" + std::string(ent->d_name);
 
-  // List the contents of the directory
-  for (const auto& entry : std::filesystem::directory_iterator(dir_path)) {
-    std::cout << entry.path() << std::endl;
+    if (stat(entryPath.c_str(), &fileStat) == -1) {
+      std::cerr << "Error: unable to get file information for " << ent->d_name << std::endl;
+      continue;
+    }
+    //store every entry into entrires
+    entries.push_back(ent->d_name);
   }
+	//sort entries alphabetically
+  std::sort(entries.begin(), entries.end());
+
+  for (const auto& entry : entries) {
+    std::string entryPath = std::string(currentDir.c_str()) + "/" + entry;
+    if (stat(entryPath.c_str(), &fileStat) == -1) {
+      std::cerr << "Error: unable to get file information for " << entry << std::endl;
+      continue;
+    }
+
+    //reference the entire filepath
+    //std::cout << entryPath << std::endl;
+
+    // Determine the type of the file system entry
+    char fileType;
+    switch (fileStat.st_mode & S_IFMT) {
+      case S_IFDIR:
+      fileType = 'd';
+      break;
+      case S_IFREG:
+      fileType = 'f';
+      break;
+      default:
+      fileType = '?';
+      break;
+    }
+
+    // Print the file system entry with its type
+    std::cout << fileType << " -> " << entry << std::endl;
+  } 
 }
 
 void Efs::CLI::cat(std::string currentDir, std::string filepath) {
@@ -156,13 +197,13 @@ void Efs::CLI::mkfile(std::string currentUser, std::string r_currentDir,
     // TODO: Replace new file
     // TODO: Re-share with all shared users
   } else {
-    // 1. Register file to database    
+    // 1. Register file to database
     std::string r_filename = database.addFile(v_filepath);
 
     // 2. Construct the actual filepath on the operating system
     std::string r_filepath = r_currentDir + r_filename;
-    
-    // 3. On operating system, create the file in the current directory 
+
+    // 3. On operating system, create the file in the current directory
     //    with the hashed filename
     std::ofstream outfile(r_filepath);
     outfile << contents << std::endl;

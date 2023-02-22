@@ -51,11 +51,14 @@ void Efs::Database::deleteFile(std::string filepath) {
 
 // get filepath from hash
 std::string Efs::Database::getFilepathFromSha256(std::string hash_string) {
+  // first, check if it is inside the file_mappings_json
+  if (!this->file_mappings_json.contains(hash_string)) return "";
+
   try {
     std::string filepath = this->file_mappings_json[hash_string].get<std::string>();
     return filepath;
   } catch (nlohmann::json_abi_v3_11_2::detail::type_error error) {
-    // means the hash string doesn't exist, just return an empty string
+    // Silently error in case there's some issue
     return "";
   }
 }
@@ -82,15 +85,15 @@ bool Efs::Database::doesDirExist(std::string dirpath) {
 // assumes user doesn't already exist
 void Efs::Database::createUser(std::string username) {
   this->user_info_json[username] = {};
-  
+
   // create their public key and private key
   std::string public_key_filename = Crypto::generateKeyPair(username);
-  
+
   // save the public key into the users_info.json
   std::ifstream ifs(public_key_filename);
   std::string public_key_contents((std::istreambuf_iterator<char>(ifs)),
                                   (std::istreambuf_iterator<char>()));
-  
+
   // save the public key under the user
   this->user_info_json[username]["public_key"] = public_key_contents;
 

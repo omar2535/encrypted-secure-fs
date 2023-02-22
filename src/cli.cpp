@@ -71,7 +71,7 @@ void Efs::CLI::pwd(std::string currentDir) {
   m_currentDir = currentDir;
 }
 
-void Efs::CLI::ls(std::string currentDir) {
+void Efs::CLI::ls(std::string currentDir, Database* database) {
   DIR* dir;
   struct dirent* ent;
   struct stat fileStat;
@@ -103,26 +103,36 @@ void Efs::CLI::ls(std::string currentDir) {
       continue;
     }
 
-    //reference the entire filepath
-    //std::cout << entryPath << std::endl;
-
     // Determine the type of the file system entry
     char fileType;
     switch (fileStat.st_mode & S_IFMT) {
       case S_IFDIR:
-      fileType = 'd';
-      break;
+        fileType = 'd';
+        break;
       case S_IFREG:
-      fileType = 'f';
-      break;
+        fileType = 'f';
+        break;
       default:
-      fileType = '?';
-      break;
+        fileType = '?';
+        break;
     }
 
+    //reference the entire filepath
+    //std::cout << entry << std::endl;
+    //std::string hashPath=std::string(entry);
+    if(entry.length()==64){
+    	std::string v_dirPath = database->getFilepathFromSha256(entry);
+    	std::string result = "";
+    	size_t pos = v_dirPath.find_last_of("/");
+    	if (pos != std::string::npos){
+    		result = v_dirPath.substr(pos+1);
+    		std::cout << fileType << " -> "<< result << std::endl;
+    	}
+    }
     // Print the file system entry with its type
+    //(TODO: Donot print hash value for entries)
     std::cout << fileType << " -> " << entry << std::endl;
-  } 
+  }
 }
 
 void Efs::CLI::cat(std::string currentDir, std::string filepath) {
@@ -167,7 +177,7 @@ void Efs::CLI::mkdir(std::string currentUser, std::string r_currentDir,
   if (database->doesDirExist(v_dirpath)) {
     std::cout << "Directory already exists" << std::endl;
   } else {
-    // 1. Register directory to database and encrypt the directory path 
+    // 1. Register directory to database and encrypt the directory path
     //    with the current user's public key
     std::string r_dirname = database->addDir(v_dirpath);
 

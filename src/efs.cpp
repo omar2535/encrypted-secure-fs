@@ -80,7 +80,7 @@ Efs::Efs::Efs(int argc, char** argv) {
         std::cout << "Usage: pwd\n";
         continue;
       }
-      cli.pwd(r_currentDir);
+      cli.pwd(r_currentDir, &database);
     } else if (v_cmd[0] == "ls") {
       if (v_cmd.size() != 1) {
         std::cout << "Incorrect number of arguments!\n";

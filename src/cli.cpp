@@ -64,11 +64,10 @@ std::string Efs::CLI::cd(std::string currentDir, std::string targetDir) {
   return m_currentDir;
 }
 
-void Efs::CLI::pwd(std::string currentDir) {
-  std::cout << currentDir << std::endl;
-
-  // Update m_currentDir to the current working directory
-  m_currentDir = currentDir;
+void Efs::CLI::pwd(std::string currentDir, Database* database) {
+  std::string lastPathComponent = std::filesystem::path(currentDir).filename().string();
+  std::string entirePath=database->getFilepathFromSha256(lastPathComponent);
+  std::cout << entirePath << std::endl;
 }
 
 void Efs::CLI::ls(std::string currentDir) {

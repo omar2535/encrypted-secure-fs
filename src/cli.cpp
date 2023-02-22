@@ -1,15 +1,27 @@
 #include <efs/cli.h>
 
-std::string Efs::CLI::cd(std::string currentDir, std::string targetDir) {
-  // Check if the target directory is an absolute path or a relative path
-  if (targetDir[0] != '/') {
-    // Target directory is a relative path, so add the current directory to the beginning
-    targetDir = currentDir + "/" + targetDir;
+std::string Efs::CLI::cd(std::string currentDir, std::string targetDir, Database* database) {
+  std::string lastPathComponent = std::filesystem::path(targetDir).filename().string();
+
+  // Handle moving up to the parent directory
+  if (lastPathComponent == "..") {
+    m_currentDir = std::filesystem::path(m_currentDir).parent_path().string();
+    if (m_currentDir == "") {
+      m_currentDir = (std::string) std::filesystem::current_path();
+    }
+    return m_currentDir;
+  }
+
+  std::string entirePath = database->getSha256FromFilePath(currentDir + "/" + lastPathComponent + "/");
+
+  // Check if the target directory exists
+  if (entirePath == "") {
+    std::cout << "Directory does not exist: " << targetDir << std::endl;
+    return "";
   }
 
   // Normalize the target directory path by removing any redundant separators and resolving any relative paths
-  targetDir = std::filesystem::path(targetDir).lexically_normal().string();
-  currentDir = targetDir;
+  targetDir = entirePath;
 
   // Set the current directory to the root directory of the system if the target directory is an absolute path
   if (targetDir[0] == '/') {
@@ -22,8 +34,8 @@ std::string Efs::CLI::cd(std::string currentDir, std::string targetDir) {
   std::string component;
   while (std::getline(ss, component, '/')) {
     if (component == "..") {
-      // If the component is "..", remove the last component from the current directory
-      if (components.size() > 0) {
+      // If the component is "..", remove the last component from the list of components
+      if (components.size() > 0 && m_currentDir != "/") {
         components.pop_back();
       }
     } else if (component != "." && component != "") {
@@ -34,32 +46,16 @@ std::string Efs::CLI::cd(std::string currentDir, std::string targetDir) {
 
   // Traverse the directory tree to the target directory
   for (const auto& component : components) {
-    // Check if the current directory is valid
-    if (!std::filesystem::is_directory(m_currentDir)) {
-      std::cout << "Invalid directory: " << m_currentDir << std::endl;
-      return "";
-    }
-
     // Try to move to the target directory
     std::filesystem::path newPath = m_currentDir;
     newPath /= component;
     if (std::filesystem::is_directory(newPath)) {
       m_currentDir = newPath.string();
-    } else if (!std::filesystem::exists(newPath)) {
-      std::cout << "Directory does not exist: " << component << std::endl;
-      return "";
     } else {
-      std::cout << "Path is not a directory: " << component << std::endl;
+      std::cout << "Directory does not exist: " << component << std::endl;
       return "";
     }
   }
-
-  // Check if the target directory exists
-  if (!std::filesystem::is_directory(m_currentDir)) {
-    std::cout << "Directory does not exist: " << targetDir << std::endl;
-    return "";
-  }
-
 
   return m_currentDir;
 }

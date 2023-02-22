@@ -63,6 +63,20 @@ std::string Efs::Database::getFilepathFromSha256(std::string hash_string) {
   }
 }
 
+// get hash from filepath
+std::string Efs::Database::getSha256FromFilePath(std::string filepath) {
+  if (std::filesystem::is_directory(filepath)) {
+    filepath += "/";
+  }
+  // iterate over the file mappings and return the hash corresponding to the given filepath
+  for (auto const& [key, val] : this->file_mappings_json.items()) {
+    if (val == filepath) {
+      return key;
+    }
+  }
+  return "";
+}
+
 // checks if file exists
 // true if it exists, false otherwise
 bool Efs::Database::doesFileExist(std::string filepath) {

@@ -15,7 +15,7 @@ namespace Efs {
   class CLI {
     public:
       std::string m_currentDir;
-      std::string cd(std::string currentDir, std::string targetDir);
+      std::string cd(std::string currentDir, std::string targetDir, Database* database);
       void pwd(std::string currentDir, Database* database);
       void ls(std::string currentDir, Database* database);
       void cat(std::string currentDir, std::string filepath);

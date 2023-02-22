@@ -9,6 +9,7 @@
 #include <efs/cli.h>
 #include <efs/database.h>
 #include <efs/login.h>
+#include <efs/utils.h>
 
 Efs::Efs::Efs(int argc, char** argv) {
   Database database;
@@ -110,11 +111,18 @@ Efs::Efs::Efs(int argc, char** argv) {
       }
       cli.mkdir(currentUser, r_currentDir, v_currentDir, v_cmd[1], &database);
     } else if (v_cmd[0] == "mkfile") {
-      if (v_cmd.size() != 3) {
+      if (v_cmd.size() < 3) {
         std::cout << "Incorrect number of arguments!\n";
         std::cout << "Usage: mkfile <filename> <contents>\n";
         continue;
       }
+      // get the last argument as a vector slice so that we can have spaces in the file contents
+      std::vector v_file_contents = std::vector<std::string>(v_cmd.begin()+2, v_cmd.end());
+
+      // combine the last file_contents ivector nto a string delimited with space
+      std::string file_contents = Utils::join(v_file_contents, " ");
+
+      // call makefile on the combined file-contents
       cli.mkfile(currentUser, r_currentDir, v_currentDir, v_cmd[1], v_cmd[2], &database);
     } else if (v_cmd[0] == "exit") {
       std::cout << "Exiting" << std::endl;

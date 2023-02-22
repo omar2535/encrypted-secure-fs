@@ -92,15 +92,18 @@ void Efs::CLI::ls(std::string currentDir, Database* database) {
     //store every entry into entrires
     entries.push_back(ent->d_name);
   }
+
 	//sort entries alphabetically
   std::sort(entries.begin(), entries.end());
 
+  // iterate through directory entries
   for (const auto& entry : entries) {
     std::string entryPath = std::string(currentDir.c_str()) + "/" + entry;
     if (stat(entryPath.c_str(), &fileStat) == -1) {
       std::cerr << "Error: unable to get file information for " << entry << std::endl;
       continue;
     }
+
     // Determine the type of the file system entry
     char fileType;
     switch (fileStat.st_mode & S_IFMT) {
@@ -116,11 +119,11 @@ void Efs::CLI::ls(std::string currentDir, Database* database) {
     }
 
     //reference the entire filepath:/admin/folder
-    std::string entirePath=database->getFilepathFromSha256(entry);
+    std::string entirePath = database->getFilepathFromSha256(entry);
 
     //check and print entries existed in database
     //TODO: add . and ..
-    if(entry.length()==64 && (database->doesDirExist(entirePath) || database->doesFileExist(entirePath))){
+    if(entry.length()==64 && entirePath != "") {
     	std::string result = "";
     	size_t pos = entirePath.find_last_of("/");
       if (pos != std::string::npos){
@@ -164,6 +167,7 @@ void Efs::CLI::mkdir(std::string currentUser, std::string r_currentDir,
   // make sure all dir names end with slash
   if (v_currentDir.back() != '/') v_currentDir += "/";
   if (r_currentDir.back() != '/') r_currentDir += "/";
+  if (v_dirname.back() != '/')    v_dirname += "/";
 
   // set some initial variables
   std::string v_dirpath = v_currentDir + v_dirname;

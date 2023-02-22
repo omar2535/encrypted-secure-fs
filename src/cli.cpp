@@ -102,7 +102,6 @@ void Efs::CLI::ls(std::string currentDir, Database* database) {
       std::cerr << "Error: unable to get file information for " << entry << std::endl;
       continue;
     }
-
     // Determine the type of the file system entry
     char fileType;
     switch (fileStat.st_mode & S_IFMT) {
@@ -117,21 +116,19 @@ void Efs::CLI::ls(std::string currentDir, Database* database) {
         break;
     }
 
-    //reference the entire filepath
-    //std::cout << entry << std::endl;
-    //std::string hashPath=std::string(entry);
-    if(entry.length()==64){
-    	std::string v_dirPath = database->getFilepathFromSha256(entry);
+    //reference the entire filepath:/admin/folder
+    std::string entirePath=database->getFilepathFromSha256(entry);
+
+    //check and print entries existed in database
+    //TODO: add . and ..
+    if(entry.length()==64 && (database->doesDirExist(entirePath) || database->doesFileExist(entirePath))){
     	std::string result = "";
-    	size_t pos = v_dirPath.find_last_of("/");
-    	if (pos != std::string::npos){
-    		result = v_dirPath.substr(pos+1);
-    		std::cout << fileType << " -> "<< result << std::endl;
+    	size_t pos = entirePath.find_last_of("/");
+      if (pos != std::string::npos){
+        result = entirePath.substr(pos+1);
+        std::cout << fileType << " -> "<< result << std::endl;
     	}
     }
-    // Print the file system entry with its type
-    //(TODO: Donot print hash value for entries)
-    std::cout << fileType << " -> " << entry << std::endl;
   }
 }
 

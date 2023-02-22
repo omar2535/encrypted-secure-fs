@@ -24,7 +24,7 @@ namespace Efs {
                  std::string v_currentDir, std::string v_dirname,
                  Database* database);
       void mkfile(std::string currentUser, std::string r_currentDir,
-                  std::string v_currentDir, std::string v_filename, 
+                  std::string v_currentDir, std::string v_filename,
                   std::string contents, Database* database);
       void exit();
   };

@@ -65,7 +65,7 @@ Efs::Efs::Efs(int argc, char** argv) {
     while(getline(ss, tmp, ' ')) {
       v_cmd.push_back(tmp);
     }
-  
+
     // Check commands
     if (v_cmd[0] == "cd") {
       if (v_cmd.size() != 2) {
@@ -87,7 +87,7 @@ Efs::Efs::Efs(int argc, char** argv) {
         std::cout << "Usage: ls\n";
         continue;
       }
-      cli.ls(r_currentDir);
+      cli.ls(r_currentDir, &database);
     } else if (v_cmd[0] == "cat") {
       if (v_cmd.size() != 2) {
         std::cout << "Incorrect number of arguments!\n";

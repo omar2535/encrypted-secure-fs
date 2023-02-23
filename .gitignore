@@ -5,10 +5,10 @@
 
 # Debugger
 .gdb_history
+peda-session*
 
 
 # Application specific
 *.pem
 *.json
-
 userabc/

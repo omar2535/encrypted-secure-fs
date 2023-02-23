@@ -108,6 +108,13 @@ Efs::Efs::Efs(int argc, char** argv) {
         continue;
       }
       cli.share(r_currentDir, v_cmd[1], v_cmd[2]);
+    } else if (v_cmd[0] == "adduser") {
+      if (v_cmd.size() != 2) {
+        std::cout << "Incorrect number of arguments!\n";
+        std::cout << "Usage: adduser <username>";
+        continue;
+      }
+      cli.adduser(v_cmd[1]);
     } else if (v_cmd[0] == "mkdir") {
       if (v_cmd.size() != 2) {
         std::cout << "Incorrect number of arguments!\n";

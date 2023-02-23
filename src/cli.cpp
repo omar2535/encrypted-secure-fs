@@ -231,3 +231,32 @@ void Efs::CLI::mkfile(std::string currentUser, std::string r_currentDir,
     std::cout << "Created file: " << v_filename << std::endl;
   }
 }
+
+// Add a new user
+void Efs::CLI::adduser(std::string username) {
+  Database database;
+
+  // Check if the username already exists in the database
+  if (database.doesUserExist(username)) {
+    std::cout << "User " << username << " already exists" << std::endl;
+    return;
+  }
+  // Check if username contains any illegal characters such as ., .., or /
+  const std::string symbols = "~`!@#$%^&*()-_+={}[]|\\:;\"'<>,.?/";
+  if(username.find_first_of(symbols) != std::string::npos){
+  	std::cout << "Username cannot contain any of the following symbols: " << symbols << std::endl;
+  	return;
+  }
+
+  // Create the user in the database
+  database.createUser(username);
+
+  // Create the user's home directory
+  std::string user_home_dir = "/" + username + "/";
+  FilesystemUtils::createDir(user_home_dir);
+  FilesystemUtils::createDir(user_home_dir + "/personal/");
+  FilesystemUtils::createDir(user_home_dir+ "/shared/");
+
+  // Print out success
+  std::cout << "Created user: " << username << std::endl;
+}

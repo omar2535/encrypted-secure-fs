@@ -91,7 +91,8 @@ void Efs::CLI::ls(std::string currentDir, Database* database) {
 
 	//sort entries alphabetically
   std::sort(entries.begin(), entries.end());
-
+  std::cout << "d -> . " << std::endl;
+  std::cout << "d -> .." << std::endl;
   // iterate through directory entries
   for (const auto& entry : entries) {
     std::string entryPath = std::string(currentDir.c_str()) + "/" + entry;
@@ -118,7 +119,6 @@ void Efs::CLI::ls(std::string currentDir, Database* database) {
     std::string filepath = database->getFilepathFromSha256(entry);
 
     //check and print entries existed in database
-    //TODO: add . and ..
     if(entry.length()==64 && filepath != "") {
       std::cout << fileType << " -> "<< Utils::getFilenameFromFilepath(filepath) << std::endl;
     }
@@ -167,7 +167,11 @@ void Efs::CLI::mkdir(std::string currentUser, std::string r_currentDir,
   // cases: if directory already exists and if it doesn't
   if (database->doesDirExist(v_dirpath)) {
     std::cout << "Directory already exists" << std::endl;
-  } else {
+  }
+  else if(v_dirname=="./" || v_dirname=="../"){
+  	std::cout << "Cannot use . or .. for a directory name" << std::endl;
+  }
+  else {
     // 1. Register directory to database and encrypt the directory path
     //    with the current user's public key
     std::string r_dirname = database->addDir(v_dirpath);
@@ -203,7 +207,11 @@ void Efs::CLI::mkfile(std::string currentUser, std::string r_currentDir,
     // TODO: Remove old file
     // TODO: Replace new file
     // TODO: Re-share with all shared users
-  } else {
+  }
+  else if(v_filename=="." || v_filename==".."){
+  	std::cout << "Cannot use . or .. for a file name" << std::endl;
+  }
+  else {
     // 1. Register file to database
     std::string r_filename = database->addFile(v_filepath);
 

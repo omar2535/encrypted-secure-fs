@@ -2,6 +2,7 @@
 /.vscode
 /cpm_modules
 .DS_Store
+CMakeCache.txt
 
 # Debugger
 .gdb_history

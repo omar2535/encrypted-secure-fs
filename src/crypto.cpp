@@ -98,11 +98,11 @@ std::string Efs::Crypto::decryptContent(std::string private_key, std::string cip
   BIO *pri_bio = BIO_new_mem_buf(private_key.c_str(), -1);
   if (!pri_bio) {
     BIO_free(pri_bio);
-    throw std::invalid_argument("Invalid pubilc key");
+    throw std::invalid_argument("Invalid private key");
   }
   RSA *pri_rsa = PEM_read_bio_RSAPrivateKey(pri_bio, NULL, NULL, NULL);
   if (!pri_rsa) {
-    throw std::invalid_argument("Invalid pubilc key");
+    throw std::invalid_argument("Invalid private key");
   }
   BIO_free(pri_bio);
   

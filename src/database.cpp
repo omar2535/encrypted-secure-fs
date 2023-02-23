@@ -106,9 +106,9 @@ void Efs::Database::createUser(std::string username) {
   this->user_info_json[username]["public_key"] = public_key_contents;
 
   // initialize user's file mappings too
-  std::string user_root_dir_hash = this->addFile(username + "/");
-  std::string user_personal_dir_hash = this->addFile(username + "/personal/");
-  std::string user_share_dir_hash = this->addFile(username + "/shared/");
+  std::string user_root_dir_hash = this->addFile("/" + username + "/");
+  std::string user_personal_dir_hash = this->addFile("/" + username + "/personal/");
+  std::string user_share_dir_hash = this->addFile("/" + username + "/shared/");
 
   // save each of the directories under the user as well
   this->user_info_json[username]["root_dir_hash"] = user_root_dir_hash;
@@ -126,12 +126,7 @@ bool Efs::Database::doesUserExist(std::string username) {
 
 // get the key for the user
 std::string Efs::Database::getPublicKeyForUser(std::string username) {
-  try {
-    return this->user_info_json[username]["public_key"].get<std::string>();
-  } catch (nlohmann::json_abi_v3_11_2::detail::type_error error) {
-    // means the username doesn't exist, just return an empty string
-    return "";
-  }
+  return this->getPropertyForUserInfo(username, "public_key");
 }
 
 // get username by private key
@@ -143,7 +138,6 @@ std::string Efs::Database::getUsernameByPrivateKey(std::string private_key) {
   }
   return "";
 }
-
 
 // Checks if the database is initialized
 // the DB consists of three JSON files.
@@ -164,6 +158,16 @@ void Efs::Database::initializeDatabase() {
   }
 }
 
+// Get's a user's property based on the key
+// assuems the retrieved property is a string
+std::string Efs::Database::getPropertyForUserInfo(std::string username, std::string property) {
+  try {
+    return this->user_info_json[username][property].get<std::string>();
+  } catch (nlohmann::json_abi_v3_11_2::detail::type_error error) {
+    // means the username doesn't exist, just return an empty string
+    return "";
+  }
+}
 
 /* PRIVATE METHODS */
 void Efs::Database::saveDbState() {

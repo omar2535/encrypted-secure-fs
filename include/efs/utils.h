@@ -23,5 +23,16 @@ namespace Efs {
         std::copy(strings.begin(), strings.end(), std::ostream_iterator<std::string>(ss, delim.c_str()));
         return ss.str();
       }
+
+      // splits a string by a character into a vector
+      static std::vector<std::string> splitString(std::string input, char delim) {
+        std::stringstream ss_input(input);
+        std::string segment;
+        std::vector<std::string> seglist;
+        while(std::getline(ss_input, segment, delim)) {
+          seglist.push_back(segment);
+        }
+        return seglist;
+      }
   };
 }

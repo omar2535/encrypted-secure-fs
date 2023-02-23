@@ -15,10 +15,16 @@ Efs::Efs::Efs(int argc, char** argv) {
 
   // initial check if admin user is there. If not then create the admin user
   if (!database.doesUserExist("admin")) {
-    database.createUser("admin");
-    // TODO: Create admin initial folders (/admin/personal) and (/admin/shared)
-    std::cout << "Created admin! Since this is first run, exiting!" << std::endl;
-    return;
+    std::cout << "Admin user not found! Would you like to create a new admin user? (y/n)" << std::endl;
+    std::string answer;
+    std::getline(std::cin, answer);
+    if (answer == "y") {
+      database.createUser("admin");
+      std::cout << "Admin user created!" << std::endl;
+    } else {
+      std::cout << "Exiting..." << std::endl;
+      return;
+    }
   }
 
   // if keyfile not inputted, ask for keyfile

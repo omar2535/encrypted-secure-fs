@@ -13,6 +13,7 @@ namespace Efs {
       void mkfile(std::string currentUser, std::string r_currentDir,
                   std::string v_currentDir, std::string v_filename, 
                   std::string contents);
+      void adduser(std::string newuser);
       void exit();
   };
 }

@@ -175,3 +175,24 @@ void Efs::CLI::mkfile(std::string currentUser, std::string r_currentDir,
     std::cout << "Created file: " << v_filename << std::endl;
   }
 }
+
+void Efs::CLI::adduser(std::string newuser) {
+
+  Database database;
+  // Check if the system has a admin user, if not, ask to create one.
+  if (!database.doesUserExist("admin")) {
+    database.createUser("admin");
+  }
+  // Check if the username already exists in the database.
+  if (database.doesUserExist(newuser)) {
+    std::cout << "User " << newuser << " already exists" << std::endl;
+    return;
+  }
+  // Check if the username is invalid
+  if (newuser.empty()) {
+    std::cout << "Invalid username" << std::endl;
+    return;
+  }
+  database.createUser(newuser);
+  std::cout << "Created user: " << newuser << std::endl;
+}

@@ -232,12 +232,12 @@ void Efs::CLI::mkfile(std::string currentUser, std::string r_currentDir,
   }
 }
 
-// Add a new user
-void Efs::CLI::adduser(std::string username) {
-  Database database;
+// Add a new user 
+void Efs::CLI::adduser(std::string username, Database* database) {
+  UserManager userManager(database);
 
   // Check if the username already exists in the database
-  if (database.doesUserExist(username)) {
+  if (database->doesUserExist(username)) {
     std::cout << "User " << username << " already exists" << std::endl;
     return;
   }
@@ -249,13 +249,7 @@ void Efs::CLI::adduser(std::string username) {
   }
 
   // Create the user in the database
-  database.createUser(username);
-
-  // Create the user's home directory
-  std::string user_home_dir = "/" + username + "/";
-  FilesystemUtils::createDir(user_home_dir);
-  FilesystemUtils::createDir(user_home_dir + "/personal/");
-  FilesystemUtils::createDir(user_home_dir+ "/shared/");
+  userManager.createUser(username);
 
   // Print out success
   std::cout << "Created user: " << username << std::endl;

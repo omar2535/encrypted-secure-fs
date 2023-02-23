@@ -114,7 +114,7 @@ Efs::Efs::Efs(int argc, char** argv) {
         std::cout << "Usage: adduser <username>";
         continue;
       }
-      cli.adduser(v_cmd[1]);
+      cli.adduser(v_cmd[1], &database);
     } else if (v_cmd[0] == "mkdir") {
       if (v_cmd.size() != 2) {
         std::cout << "Incorrect number of arguments!\n";

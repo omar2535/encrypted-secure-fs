@@ -11,7 +11,7 @@
 
 #include <efs/database.h>
 #include <efs/utils.h>
-#include <efs/filesystem_utils.h>
+#include <efs/user_manager.h>
 
 namespace Efs {
   class CLI {
@@ -29,7 +29,7 @@ namespace Efs {
       void mkfile(std::string currentUser, std::string r_currentDir,
                   std::string v_currentDir, std::string v_filename,
                   std::string contents, Database* database);
-      void adduser(std::string username);
+      void adduser(std::string username, Database* database);
       void exit();
   };
 }

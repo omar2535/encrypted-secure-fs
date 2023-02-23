@@ -12,25 +12,27 @@ std::string Efs::CLI::cd(std::string currentDir, std::string targetDir, Database
     return m_currentDir;
   }
 
-  std::string entirePath = database->getSha256FromFilePath(currentDir + "/" + lastPathComponent + "/");
-
+  std::string entirePath;
+  if (currentDir == "/"){
+    entirePath = database->getSha256FromFilePath(currentDir + lastPathComponent + "/");
+  }else{
+    entirePath = database->getSha256FromFilePath(currentDir + lastPathComponent + "/");
+  }
+  
   // Check if the target directory exists
   if (entirePath == "") {
     std::cout << "Directory does not exist: " << targetDir << std::endl;
     return "";
   }
 
-  // Normalize the target directory path by removing any redundant separators and resolving any relative paths
-  targetDir = entirePath;
-
   // Set the current directory to the root directory of the system if the target directory is an absolute path
-  if (targetDir[0] == '/') {
+  if (entirePath[0] == '/') {
     m_currentDir = "/";
   }
 
   // Split the target directory path into its components
   std::vector<std::string> components;
-  std::stringstream ss(targetDir);
+  std::stringstream ss(entirePath);
   std::string component;
   while (std::getline(ss, component, '/')) {
     if (component == "..") {
@@ -52,7 +54,7 @@ std::string Efs::CLI::cd(std::string currentDir, std::string targetDir, Database
     if (std::filesystem::is_directory(newPath)) {
       m_currentDir = newPath.string();
     } else {
-      std::cout << "Directory does not exist: " << component << std::endl;
+      std::cout << "Directory does not exist: " << targetDir << std::endl;
       return "";
     }
   }

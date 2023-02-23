@@ -37,7 +37,7 @@ Efs::Efs::Efs(int argc, char** argv) {
   // create a new CLI object
   CLI cli;
   std::string r_currentDir = (std::string) std::filesystem::current_path(); // TODO: Change this to user's home dir (hashed)
-  std::string v_currentDir = "/admin"; // TODO: Change this to the user's home dir
+  std::string v_currentDir = "/"; // TODO: Change this to the user's home dir
   std::string currentUser = loginUser(keyfile_name, database);
   if (currentUser.empty()) {
     std::cout << "User not found!" << std::endl;

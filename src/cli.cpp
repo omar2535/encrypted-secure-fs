@@ -22,7 +22,7 @@ std::vector<std::string> Efs::CLI::cd(std::string currentDir, std::string target
   // Check if the target directory exists
   if (entirePath == "") {
     std::cout << "1. Directory does not exist: " << targetDir << std::endl;
-    return {"", ""};
+    return {pre_r_currectDir, v_currentDir};
   }
 
   // Set the current directory to the root directory of the system if the target directory is an absolute path

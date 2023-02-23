@@ -1,35 +1,34 @@
 #include <efs/cli.h>
 
-std::string Efs::CLI::cd(std::string currentDir, std::string targetDir, Database* database) {
+std::vector<std::string> Efs::CLI::cd(std::string currentDir, std::string targetDir, Database* database) {
+  std::string pre_r_currectDir = m_currentDir;
   std::string lastPathComponent = std::filesystem::path(targetDir).filename().string();
-
   // Handle moving up to the parent directory
   if (lastPathComponent == "..") {
     m_currentDir = std::filesystem::path(m_currentDir).parent_path().string();
-    if (m_currentDir == "") {
-      m_currentDir = (std::string) std::filesystem::current_path();
+    v_currentDir = std::filesystem::path(v_currentDir).parent_path().string();
+    v_currentDir = std::filesystem::path(v_currentDir).parent_path().string();
+    if (v_currentDir == "/") {
+      m_currentDir = (std::string) std::filesystem::current_path(); 
+      return {m_currentDir, v_currentDir};
     }
-    return m_currentDir;
+    return {m_currentDir, v_currentDir};
+    
   }
 
   std::string entirePath;
-  if (currentDir == "/"){
-    entirePath = database->getSha256FromFilePath(currentDir + lastPathComponent + "/");
-  }else{
-    entirePath = database->getSha256FromFilePath(currentDir + lastPathComponent + "/");
-  }
+  entirePath = database->getSha256FromFilePath(currentDir + lastPathComponent + "/");
   
   // Check if the target directory exists
   if (entirePath == "") {
-    std::cout << "Directory does not exist: " << targetDir << std::endl;
-    return "";
+    std::cout << "1. Directory does not exist: " << targetDir << std::endl;
+    return {pre_r_currectDir, v_currentDir};
   }
 
   // Set the current directory to the root directory of the system if the target directory is an absolute path
   if (entirePath[0] == '/') {
     m_currentDir = "/";
   }
-
   // Split the target directory path into its components
   std::vector<std::string> components;
   std::stringstream ss(entirePath);
@@ -54,18 +53,17 @@ std::string Efs::CLI::cd(std::string currentDir, std::string targetDir, Database
     if (std::filesystem::is_directory(newPath)) {
       m_currentDir = newPath.string();
     } else {
-      std::cout << "Directory does not exist: " << targetDir << std::endl;
-      return "";
+      std::cout << "2. Directory does not exist: " << targetDir << std::endl;
+      return {pre_r_currectDir, v_currentDir};
     }
   }
 
-  return m_currentDir;
+  v_currentDir = currentDir + lastPathComponent + "/";
+  return {m_currentDir, v_currentDir};
 }
 
 void Efs::CLI::pwd(std::string currentDir, Database* database) {
-  std::string lastPathComponent = std::filesystem::path(currentDir).filename().string();
-  std::string entirePath=database->getFilepathFromSha256(lastPathComponent);
-  std::cout << entirePath << std::endl;
+  std::cout << currentDir << std::endl;
 }
 
 void Efs::CLI::ls(std::string currentDir, Database* database) {

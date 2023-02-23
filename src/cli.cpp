@@ -119,17 +119,12 @@ void Efs::CLI::ls(std::string currentDir, Database* database) {
     }
 
     //reference the entire filepath:/admin/folder
-    std::string entirePath = database->getFilepathFromSha256(entry);
+    std::string filepath = database->getFilepathFromSha256(entry);
 
     //check and print entries existed in database
     //TODO: add . and ..
-    if(entry.length()==64 && entirePath != "") {
-    	std::string result = "";
-    	size_t pos = entirePath.find_last_of("/");
-      if (pos != std::string::npos){
-        result = entirePath.substr(pos+1);
-        std::cout << fileType << " -> "<< result << std::endl;
-    	}
+    if(entry.length()==64 && filepath != "") {
+      std::cout << fileType << " -> "<< Utils::getFilenameFromFilepath(filepath) << std::endl;
     }
   }
 }

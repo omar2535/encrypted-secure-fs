@@ -9,8 +9,12 @@ namespace Efs {
     public:
       // Gets filename from filepath
       static std::string getFilenameFromFilepath(std::string filepath) {
-        std::string base_filename = filepath.substr(filepath.find_last_of("/\\") + 1);
-        return base_filename;
+        if (filepath.back() == '/') {
+          filepath.pop_back();
+          return filepath.substr(filepath.find_last_of("/\\") + 1) + "/";
+        } else {
+          return filepath.substr(filepath.find_last_of("/\\") + 1);
+        }
       }
 
       // joins a vector of string by the delimiter given

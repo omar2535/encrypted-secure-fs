@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 
 #include <efs/database.h>
+#include <efs/utils.h>
 
 namespace Efs {
   class CLI {

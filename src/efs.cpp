@@ -74,7 +74,7 @@ Efs::Efs::Efs(int argc, char** argv) {
         std::cout << "Usage: cd <directory>\n";
         continue;
       }
-      r_currentDir = cli.cd(r_currentDir, v_cmd[1]);
+      r_currentDir = cli.cd(v_currentDir, v_cmd[1], &database);
     } else if (v_cmd[0] == "pwd") {
       if (v_cmd.size() != 1) {
         std::cout << "Incorrect number of arguments!\n";

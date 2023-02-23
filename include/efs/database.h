@@ -20,6 +20,7 @@ namespace Efs {
       std::string addDir(std::string dirpath);
       void deleteFile(std::string filepath);
       std::string getFilepathFromSha256(std::string hash_string);
+      std::string getSha256FromFilePath(std::string filepath);
       bool doesFileExist(std::string filepath);
       bool doesDirExist(std::string dirpath);
 

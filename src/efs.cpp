@@ -10,14 +10,15 @@
 #include <efs/database.h>
 #include <efs/login.h>
 #include <efs/utils.h>
+#include <efs/user_manager.h>
 
 Efs::Efs::Efs(int argc, char** argv) {
   Database database;
+  UserManager userManager(&database);
 
   // initial check if admin user is there. If not then create the admin user
   if (!database.doesUserExist("admin")) {
-    database.createUser("admin");
-    // TODO: Create admin initial folders (/admin/personal) and (/admin/shared)
+    userManager.createUser("admin");
     std::cout << "Created admin! Since this is first run, exiting!" << std::endl;
     return;
   }

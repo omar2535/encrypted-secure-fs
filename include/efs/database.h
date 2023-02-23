@@ -30,6 +30,7 @@ namespace Efs {
       bool doesUserExist(std::string username);
       std::string getPublicKeyForUser(std::string username);
       std::string getUsernameByPrivateKey(std::string private_key);
+      std::string getPropertyForUserInfo(std::string username, std::string property);
 
       /* For Shared.json */
       std::vector<std::string> getSharedFilesForUser();
@@ -50,7 +51,7 @@ namespace Efs {
         {this->USER_INFO_FILE, &(this->user_info_json)}
       };
 
-      
+
       /* For functions to call */
       void saveDbState();
   };

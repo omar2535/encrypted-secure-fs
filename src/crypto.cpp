@@ -126,7 +126,8 @@ bool Efs::Crypto::validatePrivateKey(std::string privateKeyStr, std::string publ
     res = decryptContent(privateKeyStr, encryptContent(publicKeyStr, secret));
   }
   catch(const std::exception& e) {
-    std::cerr << e.what() << '\n';
+    // suppress when login
+    // std::cerr << e.what() << '\n';
   }
   return res == secret;
 }

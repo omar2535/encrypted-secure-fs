@@ -114,14 +114,20 @@ std::string Efs::CLI::cat(std::string filename) {
   // construct the filepath
   std::string filepath = this->v_current_dir + filename;
 
-  // Check if the file exists
-  if (!this->database->doesFileExist(filepath)) {
-    std::cout << "File does not exist: " << filepath << std::endl;
+  std::ifstream file("File_mappings.json");
+  std::stringstream buffer2;
+  buffer2 << file.rdbuf();
+  std::string jsonfile = buffer2.str();
+  if (jsonfile.find(filepath) != std::string::npos) {
+    std::cout << "Read " << filename << ":" << std::endl;
+  } else {
+    std::cout << "Target file does not exist" << std::endl;
     return "";
   }
 
   // actual read
   try {
+    std::cout << this->filesystem_service.readFile(filepath, this->private_key) << std::endl;
     return this->filesystem_service.readFile(filepath, this->private_key);
   } catch (FilesystemService::ReadFileException &ex) {
     std::cout << "Unable to read file" << std::endl;

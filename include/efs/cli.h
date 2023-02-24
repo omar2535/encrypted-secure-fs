@@ -28,13 +28,13 @@ namespace Efs {
       CLI(Database* database, std::string username, std::string initial_dir);
 
       std::vector<std::string> cd(std::string currentDir, std::string targetDir);
+      std::string cat(std::string filename, std::string private_key);
+
       void pwd(std::string currentDir);
       void ls(std::string currentDir);
-      void cat(std::string currentDir, std::string filepath);
       void share(std::string currentDir, std::string filepath, std::string targetuser);
-      void mkdir(std::string currentUser, std::string r_currentDir,
-                 std::string v_currentDir, std::string v_dirname);
-      void mkfile(std::string v_filename, std::string contents);
+      void mkdir(std::string dirname);
+      void mkfile(std::string filename, std::string contents);
       void adduser(std::string username);
       void exit();
 

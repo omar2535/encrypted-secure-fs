@@ -93,7 +93,7 @@ Efs::Efs::Efs(int argc, char** argv) {
         std::cout << "Usage: cat <filename>\n";
         continue;
       }
-      cli.cat(r_currentDir, v_cmd[1]);
+      cli.cat(v_cmd[1], privateKeyStr);
     } else if (v_cmd[0] == "share") {
       if (v_cmd.size() != 3) {
         std::cout << "Incorrect number of arguments!\n";
@@ -114,7 +114,7 @@ Efs::Efs::Efs(int argc, char** argv) {
         std::cout << "Usage: mkdir <directory>\n";
         continue;
       }
-      cli.mkdir(username, r_currentDir, v_currentDir, v_cmd[1]);
+      cli.mkdir(v_cmd[1]);
     } else if (v_cmd[0] == "mkfile") {
       if (v_cmd.size() < 3) {
         std::cout << "Incorrect number of arguments!\n";

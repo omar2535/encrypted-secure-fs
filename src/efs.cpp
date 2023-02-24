@@ -24,7 +24,9 @@ Efs::Efs::Efs(int argc, char** argv) {
   std::string keyfile_name = argv[1];
 
   // login
-  std::string username = loginUser(keyfile_name, database);
+  auto loginResult = loginUser(keyfile_name, database);
+  std::string username = std::get<0>(loginResult);
+  std::string privateKeyStr = std::get<1>(loginResult);
   if (username.empty()) {
     std::cout << "User not found!" << std::endl;
     return;

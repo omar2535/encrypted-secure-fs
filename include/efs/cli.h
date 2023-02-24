@@ -18,7 +18,6 @@ namespace Efs {
   class CLI {
     public:
       std::string v_current_dir;
-      std::string m_currentDir; // TODO: Remove this. Only keep v_current_dir
 
       /**
        * @brief Construct a new CLI object
@@ -27,10 +26,10 @@ namespace Efs {
        */
       CLI(Database* database, std::string username, std::string initial_dir);
 
-      std::vector<std::string> cd(std::string currentDir, std::string targetDir);
+      void cd(std::string targetDir);
       std::string cat(std::string filename, std::string private_key);
 
-      void pwd(std::string currentDir);
+      void pwd();
       void ls(std::string currentDir);
       void share(std::string currentDir, std::string filepath, std::string targetuser);
       void mkdir(std::string dirname);

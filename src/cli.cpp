@@ -7,69 +7,48 @@ Efs::CLI::CLI(Database* database, std::string username, std::string private_key,
   this->v_current_dir = initial_dir;
 }
 
-std::vector<std::string> Efs::CLI::cd(std::string currentDir, std::string targetDir) {
-  std::string pre_r_currectDir = m_currentDir;
-  std::string lastPathComponent = std::filesystem::path(targetDir).filename().string();
-  // Handle moving up to the parent directory
-  if (lastPathComponent == "..") {
-    m_currentDir = std::filesystem::path(m_currentDir).parent_path().string();
-    v_current_dir = std::filesystem::path(v_current_dir).parent_path().string();
-    v_current_dir = std::filesystem::path(v_current_dir).parent_path().string();
-    if (v_current_dir == "/") {
-      m_currentDir = (std::string) std::filesystem::current_path();
-      return {m_currentDir, v_current_dir};
-    }
-    return {m_currentDir, v_current_dir};
-  }
-
-  std::string entirePath;
-  entirePath = this->database->getSha256FromFilePath(currentDir + lastPathComponent + "/");
-
-  // Check if the target directory exists
-  if (entirePath == "") {
-    std::cout << "1. Directory does not exist: " << targetDir << std::endl;
-    return {pre_r_currectDir, v_current_dir};
-  }
-
-  // Set the current directory to the root directory of the system if the target directory is an absolute path
-  if (entirePath[0] == '/') {
-    m_currentDir = "/";
-  }
-  // Split the target directory path into its components
-  std::vector<std::string> components;
-  std::stringstream ss(entirePath);
-  std::string component;
-  while (std::getline(ss, component, '/')) {
-    if (component == "..") {
-      // If the component is "..", remove the last component from the list of components
-      if (components.size() > 0 && m_currentDir != "/") {
-        components.pop_back();
+void Efs::CLI::cd(std::string targetDir) {
+  if (targetDir == "..") {
+    if (this->v_current_dir == "/" + username + "/"){
+      if (username != "admin"){
+        std::cout << "Permission denied" << std::endl;
+        return;
       }
-    } else if (component != "." && component != "") {
-      // If the component is not "." or an empty string, add it to the list of components
-      components.push_back(component);
+    }else if (this->v_current_dir == "/")
+    {
+      return;
     }
-  }
+    // check if the last character of currentDir is "/"
+    bool endsWithSlash = this->v_current_dir.back() == '/';
 
-  // Traverse the directory tree to the target directory
-  for (const auto& component : components) {
-    // Try to move to the target directory
-    std::filesystem::path newPath = m_currentDir;
-    newPath /= component;
-    if (std::filesystem::is_directory(newPath)) {
-      m_currentDir = newPath.string();
+    // find the last '/' before the trailing '/'
+    size_t lastSlashPos = this->v_current_dir.find_last_of("/", this->v_current_dir.length() - (endsWithSlash ? 2 : 1));
+    
+    this->v_current_dir = this->v_current_dir.substr(0, lastSlashPos + 1);
+    return;
+  } else if (targetDir == ".") {
+    return;
+  } else {
+    std::string newDir = this->v_current_dir + targetDir;
+    if (newDir.find_last_of("/")!= newDir.length() - 1) {
+      newDir += "/";
+    }
+
+    std::ifstream file("File_mappings.json");
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    std::string fileContents = buffer.str();
+    if (fileContents.find(newDir) != std::string::npos) {
+      this->v_current_dir = newDir;
     } else {
-      std::cout << "2. Directory does not exist: " << targetDir << std::endl;
-      return {pre_r_currectDir, v_current_dir};
+      std::cout << "Target directory does not exist" << std::endl;
+      return;
     }
   }
-
-  v_current_dir = currentDir + lastPathComponent + "/";
-  return {m_currentDir, v_current_dir};
 }
 
-void Efs::CLI::pwd(std::string currentDir) {
-  std::cout << currentDir << std::endl;
+void Efs::CLI::pwd() {
+  std::cout << v_current_dir << std::endl;
 }
 
 void Efs::CLI::ls(std::string currentDir) {

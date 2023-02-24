@@ -69,17 +69,14 @@ Efs::Efs::Efs(int argc, char** argv) {
         continue;
       }
       // Call the cd function and store the returned vector in a variable
-      std::vector<std::string> result = cli.cd(v_currentDir, v_cmd[1]);
-      // Extract the individual elements from the vector and store them in new string variables
-      r_currentDir = result[0];
-      v_currentDir = result[1];
+      cli.cd(v_cmd[1]);
     } else if (v_cmd[0] == "pwd") {
       if (v_cmd.size() != 1) {
         std::cout << "Incorrect number of arguments!\n";
         std::cout << "Usage: pwd\n";
         continue;
       }
-      cli.pwd(v_currentDir);
+      cli.pwd();
     } else if (v_cmd[0] == "ls") {
       if (v_cmd.size() != 1) {
         std::cout << "Incorrect number of arguments!\n";

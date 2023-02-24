@@ -1,9 +1,11 @@
 #pragma once
 
-#include <nlohmann/json.hpp>
 #include <iostream>
 #include <fstream>
+#include <map>
+
 #include <efs/crypto.h>
+#include <nlohmann/json.hpp>
 
 namespace Efs {
   class Database {
@@ -21,8 +23,8 @@ namespace Efs {
       void deleteFile(std::string filepath);
       std::string getFilepathFromSha256(std::string hash_string);
       std::string getSha256FromFilePath(std::string filepath);
-      bool doesFileExist(std::string filepath);
-      bool doesDirExist(std::string dirpath);
+      bool doesFileExist(std::string v_filepath);
+      bool doesDirExist(std::string v_dirpath);
 
 
       /* For Users_info.json */

@@ -1,28 +1,32 @@
 #include <efs/cli.h>
 
+Efs::CLI::CLI(Database* database, std::string username) {
+  this->database = database;
+  this->username = username;
+}
+
 std::vector<std::string> Efs::CLI::cd(std::string currentDir, std::string targetDir, Database* database) {
   std::string pre_r_currectDir = m_currentDir;
   std::string lastPathComponent = std::filesystem::path(targetDir).filename().string();
   // Handle moving up to the parent directory
   if (lastPathComponent == "..") {
     m_currentDir = std::filesystem::path(m_currentDir).parent_path().string();
-    v_currentDir = std::filesystem::path(v_currentDir).parent_path().string();
-    v_currentDir = std::filesystem::path(v_currentDir).parent_path().string();
-    if (v_currentDir == "/") {
-      m_currentDir = (std::string) std::filesystem::current_path(); 
-      return {m_currentDir, v_currentDir};
+    v_current_dir = std::filesystem::path(v_current_dir).parent_path().string();
+    v_current_dir = std::filesystem::path(v_current_dir).parent_path().string();
+    if (v_current_dir == "/") {
+      m_currentDir = (std::string) std::filesystem::current_path();
+      return {m_currentDir, v_current_dir};
     }
-    return {m_currentDir, v_currentDir};
-    
+    return {m_currentDir, v_current_dir};
   }
 
   std::string entirePath;
   entirePath = database->getSha256FromFilePath(currentDir + lastPathComponent + "/");
-  
+
   // Check if the target directory exists
   if (entirePath == "") {
     std::cout << "1. Directory does not exist: " << targetDir << std::endl;
-    return {pre_r_currectDir, v_currentDir};
+    return {pre_r_currectDir, v_current_dir};
   }
 
   // Set the current directory to the root directory of the system if the target directory is an absolute path
@@ -54,12 +58,12 @@ std::vector<std::string> Efs::CLI::cd(std::string currentDir, std::string target
       m_currentDir = newPath.string();
     } else {
       std::cout << "2. Directory does not exist: " << targetDir << std::endl;
-      return {pre_r_currectDir, v_currentDir};
+      return {pre_r_currectDir, v_current_dir};
     }
   }
 
-  v_currentDir = currentDir + lastPathComponent + "/";
-  return {m_currentDir, v_currentDir};
+  v_current_dir = currentDir + lastPathComponent + "/";
+  return {m_currentDir, v_current_dir};
 }
 
 void Efs::CLI::pwd(std::string currentDir, Database* database) {
@@ -153,15 +157,15 @@ void Efs::CLI::share(std::string currentDir, std::string filepath, std::string t
 }
 
 void Efs::CLI::mkdir(std::string currentUser, std::string r_currentDir,
-                     std::string v_currentDir, std::string v_dirname,
+                     std::string v_current_dir, std::string v_dirname,
                      Database* database) {
   // make sure all dir names end with slash
-  if (v_currentDir.back() != '/') v_currentDir += "/";
+  if (v_current_dir.back() != '/') v_current_dir += "/";
   if (r_currentDir.back() != '/') r_currentDir += "/";
   if (v_dirname.back() != '/')    v_dirname += "/";
 
   // set some initial variables
-  std::string v_dirpath = v_currentDir + v_dirname;
+  std::string v_dirpath = v_current_dir + v_dirname;
   std::string public_key = database->getPublicKeyForUser(currentUser);
 
   // cases: if directory already exists and if it doesn't
@@ -190,16 +194,19 @@ void Efs::CLI::mkdir(std::string currentUser, std::string r_currentDir,
 
 // makes the file with the given contents
 // if already exists, overwrite the file and re-share with all shared users
-void Efs::CLI::mkfile(std::string currentUser, std::string r_currentDir,
-                      std::string v_currentDir, std::string v_filename,
-                      std::string contents, Database* database) {
+void Efs::CLI::mkfile(std::string v_filename, std::string contents) {
+  // validity checks
+  if (v_filename == "." || v_filename == "..") {
+    std::cout << "Cannot use . or .. for a filename" << std::endl;
+    return;
+  }
+
   // make sure all dir names end with slash
-  if (v_currentDir.back() != '/') v_currentDir += "/";
-  if (r_currentDir.back() != '/') r_currentDir += "/";
+  if (this->v_current_dir.back() != '/') this->v_current_dir += "/";
 
   // set some initial variables
-  std::string v_filepath = v_currentDir + v_filename;
-  std::string public_key = database->getPublicKeyForUser(currentUser);
+  std::string v_filepath = v_current_dir + v_filename;
+  std::string public_key = database->getPublicKeyForUser(this->username);
 
   // cases: if file already exists and if it doesn't
   if (database->doesFileExist(v_filepath)) {
@@ -207,32 +214,25 @@ void Efs::CLI::mkfile(std::string currentUser, std::string r_currentDir,
     // TODO: Remove old file
     // TODO: Replace new file
     // TODO: Re-share with all shared users
-  }
-  else if(v_filename=="." || v_filename==".."){
-  	std::cout << "Cannot use . or .. for a file name" << std::endl;
-  }
-  else {
+  } else {
     // 1. Register file to database
     std::string r_filename = database->addFile(v_filepath);
 
-    // 2. Construct the actual filepath on the operating system
-    std::string r_filepath = r_currentDir + r_filename;
-
-    // 3. On operating system, create the file in the current directory
-    //    with the hashed filename
-    std::ofstream outfile(r_filepath);
-    outfile << contents << std::endl;
-    outfile.close();
-
-    // 4. Encrypt the file
-    Crypto::encryptFile(public_key, r_filepath);
-
-    // 5. Print out success
-    std::cout << "Created file: " << v_filename << std::endl;
+    // 2. Create the file
+    try {
+      bool res = this->filesystem_service.createFile(v_filepath, contents, public_key);
+      if (!res) {
+        std::cout << "File already exists" << std::endl;
+      } else {
+        std::cout << "Created file!" << std::endl;
+      }
+    } catch (FilesystemService::CreateFileException &ex) {
+      std::cout << "Internal error: Unable to create file" << std::endl;
+    }
   }
 }
 
-// Add a new user 
+// Add a new user
 void Efs::CLI::adduser(std::string username, Database* database) {
   UserManager userManager(database);
 

@@ -10,6 +10,8 @@
 #include <efs/utils.h>
 #include <efs/crypto.h>
 
+#define FILESYSTEM_ROOT_DIR "filesystem"
+
 namespace Efs {
   class FilesystemUtils {
     public:
@@ -32,7 +34,7 @@ namespace Efs {
       static void createDir(std::string dirpath) {
         std::vector<std::string> split_string_dirpath = Utils::splitString(dirpath, '/');
         std::string v_previous_dir = "/";
-        std::string r_previous_dir = (std::string) std::filesystem::current_path() + "/";
+        std::string r_previous_dir = (std::string) std::filesystem::current_path() + FILESYSTEM_ROOT_DIR;
         for (int i=0; i<split_string_dirpath.size(); i++) {
           if (split_string_dirpath[i] == "") continue;
           // create folders up to the last folder

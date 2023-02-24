@@ -13,9 +13,9 @@ std::string Efs::UserManager::createUser(std::string username) {
 
   if (!this->database->doesUserExist(username)) {
     this->database->createUser(username);
-    FilesystemUtils::createDir(user_home_dir);
-    FilesystemUtils::createDir(user_home_dir + "/personal/");
-    FilesystemUtils::createDir(user_home_dir+ "/shared/");
+    this->filesystem_service.createDirectory(user_home_dir);
+    this->filesystem_service.createDirectory(user_home_dir + "/personal/");
+    this->filesystem_service.createDirectory(user_home_dir+ "/shared/");
   }
 
   return user_home_dir;

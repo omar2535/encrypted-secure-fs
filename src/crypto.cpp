@@ -105,7 +105,7 @@ std::string Efs::Crypto::decryptContent(std::string private_key, std::string cip
     throw std::invalid_argument("Invalid private key");
   }
   BIO_free(pri_bio);
-  
+
   // Decrypt
   unsigned char* ciphertext_char = reinterpret_cast<unsigned char*>(&ciphertext[0]);
   unsigned char* plaintext_char  = new unsigned char[2048];
@@ -178,7 +178,7 @@ std::string Efs::Crypto::decryptFile(std::string private_key, std::string filepa
     throw std::runtime_error("Invalid filepath");
   }
   std::string ciphertext((std::istreambuf_iterator<char>(infile)),
-                            std::istreambuf_iterator<char>());
+                          std::istreambuf_iterator<char>());
   if (infile.fail() && !infile.eof()) {
     std::cerr << "Error: Failed to read data from file '" << filepath << "'" << std::endl;
     infile.close();

@@ -139,6 +139,26 @@ std::string Efs::Database::getUsernameByPrivateKey(std::string private_key) {
   return "";
 }
 
+/* ------------------------------------- */
+
+/* ------------------------------------- */
+/* For Shared.json */
+void Efs::Database::addSharedFileForFile(std::string filehash_original, std::string filehash_shared) {
+  if (!this->shared_json.contains(filehash_original)) {
+    this->shared_json[filehash_original] = {filehash_shared};
+  } else {
+    this->shared_json[filehash_original].push_back(filehash_shared);
+  }
+}
+
+std::vector<std::string> Efs::Database::getAllFilesForFile(std::string filehash_original) {
+  if (this->shared_json.contains(filehash_original)) {
+        return this->shared_json[filehash_original].get<std::vector<std::string>>();
+    } else {
+        return {};
+    }
+}
+
 // Checks if the database is initialized
 // the DB consists of three JSON files.
 bool Efs::Database::isDatabaseInitialized() {

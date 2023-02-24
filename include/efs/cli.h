@@ -18,20 +18,20 @@ namespace Efs {
   class CLI {
     public:
       std::string v_current_dir;
+      std::string private_key;
 
       /**
        * @brief Construct a new CLI object
        *
        * @param database database pointer
        */
-      CLI(Database* database, std::string username, std::string initial_dir);
+      CLI(Database* database, std::string username, std::string private_key, std::string initial_dir);
 
       void cd(std::string targetDir);
-      std::string cat(std::string filename, std::string private_key);
-
+      std::string cat(std::string filename);
       void pwd();
       void ls(std::string currentDir);
-      void share(std::string currentDir, std::string filepath, std::string targetuser);
+      void share(std::string filename, std::string targetuser);
       void mkdir(std::string dirname);
       void mkfile(std::string filename, std::string contents);
       void adduser(std::string username);

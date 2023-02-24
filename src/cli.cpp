@@ -1,8 +1,9 @@
 #include <efs/cli.h>
 
-Efs::CLI::CLI(Database* database, std::string username, std::string initial_dir) {
+Efs::CLI::CLI(Database* database, std::string username, std::string private_key, std::string initial_dir) {
   this->database = database;
   this->username = username;
+  this->private_key = private_key;
   this->v_current_dir = initial_dir;
 }
 
@@ -109,7 +110,7 @@ void Efs::CLI::ls(std::string currentDir) {
   }
 }
 
-std::string Efs::CLI::cat(std::string filename, std::string private_key) {
+std::string Efs::CLI::cat(std::string filename) {
   // construct the filepath
   std::string filepath = this->v_current_dir + filename;
 
@@ -121,16 +122,55 @@ std::string Efs::CLI::cat(std::string filename, std::string private_key) {
 
   // actual read
   try {
-    return this->filesystem_service.readFile(filepath, private_key);
+    return this->filesystem_service.readFile(filepath, this->private_key);
   } catch (FilesystemService::ReadFileException &ex) {
     std::cout << "Unable to read file" << std::endl;
     return "";
   }
 }
 
-void Efs::CLI::share(std::string currentDir, std::string filepath, std::string targetuser) {
-  // TODO: Implement me!
-  std::cout << "TODO: IMPLEMENT ME!" << std::endl;
+void Efs::CLI::share(std::string filename, std::string targetuser) {
+  // set some initial variables
+  std::string filepath_current = this->v_current_dir  + filename;
+  std::string dirpath_shared = "/" + targetuser + "/shared/" + this->username + "/";
+
+  // error check
+  if (this->username == targetuser) {
+    std::cout << "Target user cannot be current user" << std::endl;
+    return;
+  }
+  if (!database->doesFileExist(filepath_current)) {
+    std::cout << "File does not exist" << std::endl;
+    return;
+  }
+  if (!database->doesUserExist(targetuser)) {
+    std::cout << "User does not exist" << std::endl;
+    return;
+  }
+
+  // Check target dir
+  if (!database->doesDirExist(dirpath_shared)) {
+    bool res = this->filesystem_service.createDirectory(dirpath_shared);
+    if (!res) {
+      throw std::runtime_error("Error with database and actual dir");
+    }
+  }
+  // decrypt current file content
+  std::string contents;
+  try {
+    this->filesystem_service.readFile(filepath_current, private_key);
+  } catch (FilesystemService::ReadFileException &ex) {
+    std::cout << "Unable to read file" << std::endl;
+    return;
+  }
+  std::cout << "File decrypted" << std::endl;
+
+  // make new file
+  // mkfile()
+  // add to database
+  // this->database->addSharedFileForFile(database->getSha256FromFilePath(v_filepath_current), 
+  //                                 database->getSha256FromFilePath(v_filepath_shared));
+
 }
 
 

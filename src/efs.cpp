@@ -39,7 +39,7 @@ Efs::Efs::Efs(int argc, char** argv) {
   std::string v_currentDir = "/" + username + "/";
 
   // initialize the user's CLI
-  CLI cli(&database, username, v_currentDir);
+  CLI cli(&database, username, privateKeyStr, v_currentDir);
 
   // main loop
   while (true) {
@@ -90,14 +90,14 @@ Efs::Efs::Efs(int argc, char** argv) {
         std::cout << "Usage: cat <filename>\n";
         continue;
       }
-      cli.cat(v_cmd[1], privateKeyStr);
+      cli.cat(v_cmd[1]);
     } else if (v_cmd[0] == "share") {
       if (v_cmd.size() != 3) {
         std::cout << "Incorrect number of arguments!\n";
         std::cout << "Usage: share <filename> <username>\n";
         continue;
       }
-      cli.share(r_currentDir, v_cmd[1], v_cmd[2]);
+      cli.share(v_cmd[1], v_cmd[2]);
     } else if (v_cmd[0] == "adduser") {
       if (v_cmd.size() != 2) {
         std::cout << "Incorrect number of arguments!\n";

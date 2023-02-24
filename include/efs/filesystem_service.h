@@ -43,6 +43,17 @@ namespace Efs {
        */
       bool createFile(std::string v_filepath, std::string contents, std::string public_key);
 
+
+      /**
+       * @brief Create the file contents to the file for a virtual filepath
+       *
+       * @param private_key the private key for the user
+       * @param v_filepath virtual filepath
+       * @param targetuser the target user to share file
+       * @throws ShareFileException when sharing a file fails
+       */
+      void shareFile(std::string private_key, std::string v_filepath, std::string target_dir);
+
       /**
        * @brief Exception when reading a file fails
        *
@@ -77,6 +88,19 @@ namespace Efs {
         public:
           std::string _msg;
           CreateFileException(const std::string& msg) : _msg(msg){}
+          virtual const char* what() const noexcept override {
+            return _msg.c_str();
+          }
+      };
+
+      /**
+       * @brief Exception when sharing a file fails
+       *
+       */
+      class ShareFileException: public std::exception {
+        public:
+          std::string _msg;
+          ShareFileException(const std::string& msg) : _msg(msg){}
           virtual const char* what() const noexcept override {
             return _msg.c_str();
           }

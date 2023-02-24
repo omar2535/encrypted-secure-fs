@@ -53,6 +53,15 @@ bool Efs::FilesystemService::createFile(std::string v_filepath, std::string cont
   }
 }
 
+void Efs::FilesystemService::shareFile(std::string private_key, std::string v_filepath, std::string target_dir) {
+  try {
+    // Create target dir
+
+  } catch (const std::exception& ex) {
+    std::cerr << "Encountered error:" << ex.what() << std::endl;
+    throw ShareFileException("Unable to share file");
+  }
+}
 
 /* PRIVATE FUNCTIONS HERE */
 

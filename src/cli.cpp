@@ -130,25 +130,22 @@ void Efs::CLI::ls(std::string currentDir) {
   }
 }
 
-void Efs::CLI::cat(std::string currentDir, std::string filepath) {
+std::string Efs::CLI::cat(std::string filename, std::string private_key) {
+  // construct the filepath
+  std::string filepath = this->v_current_dir + filename;
+
   // Check if the file exists
-  std::filesystem::path filePath = currentDir + "/" + filepath;
-  if (!std::filesystem::exists(filePath)) {
+  if (!this->database->doesFileExist(filepath)) {
     std::cout << "File does not exist: " << filepath << std::endl;
-    return;
+    return "";
   }
 
-  // Check if the file is readable
-  std::ifstream fileStream(filePath);
-  if (!fileStream.is_open()) {
-    std::cout << "Could not open file: " << filepath << std::endl;
-    return;
-  }
-
-  // Read the contents of the file and output to the console
-  std::string line;
-  while (std::getline(fileStream, line)) {
-    std::cout << line << std::endl;
+  // actual read
+  try {
+    return this->filesystem_service.readFile(filepath, private_key);
+  } catch (FilesystemService::ReadFileException &ex) {
+    std::cout << "Unable to read file" << std::endl;
+    return "";
   }
 }
 
@@ -157,78 +154,72 @@ void Efs::CLI::share(std::string currentDir, std::string filepath, std::string t
   std::cout << "TODO: IMPLEMENT ME!" << std::endl;
 }
 
-void Efs::CLI::mkdir(std::string currentUser, std::string r_currentDir,
-                     std::string v_current_dir, std::string v_dirname) {
-  // make sure all dir names end with slash
-  if (v_current_dir.back() != '/') v_current_dir += "/";
-  if (r_currentDir.back() != '/') r_currentDir += "/";
-  if (v_dirname.back() != '/')    v_dirname += "/";
+
+void Efs::CLI::mkdir(std::string dirname) {
+  if (dirname.back() != '/') dirname += "/";
 
   // set some initial variables
-  std::string v_dirpath = v_current_dir + v_dirname;
-  std::string public_key = this->database->getPublicKeyForUser(currentUser);
+  std::string dirpath = this->v_current_dir + dirname;
 
-  // cases: if directory already exists and if it doesn't
-  if (this->database->doesDirExist(v_dirpath)) {
-    std::cout << "Directory already exists" << std::endl;
-  }
-  else if(v_dirname=="./" || v_dirname=="../"){
+  // case: If dirname is . or ..
+  if(dirname == "." || dirname == ".."){
   	std::cout << "Cannot use . or .. for a directory name" << std::endl;
+    return;
   }
-  else {
+
+  // case: if directory already exists
+  if (this->database->doesDirExist(dirname)) {
+    std::cout << "Directory already exists" << std::endl;
+    return;
+  }
+
+  try {
     // 1. Register directory to database and encrypt the directory path
     //    with the current user's public key
-    std::string r_dirname = this->database->addDir(v_dirpath);
+    this->database->addDir(dirpath);
 
-    // 2. Construct the actual path of the directory on the operating system
-    std::string r_dirpath = r_currentDir + r_dirname;
-
-    // 3. On operating system, create the directory in the current directory
+    // 2. On operating system, create the directory in the current directory
     //    with the hashed directory name
-    std::filesystem::create_directory(r_dirpath);
+    this->filesystem_service.createDirectory(dirpath);
 
-    // 4. Print out success
-    std::cout << "Created directory: " << v_dirname << std::endl;
+    // 3. Print out success
+    std::cout << "Created directory: " << dirpath << std::endl;
+  } catch (FilesystemService::CreateDirectoryException &ex) {
+    std::cout << "Error creating directory" << std::endl;
   }
 }
 
 // makes the file with the given contents
 // if already exists, overwrite the file and re-share with all shared users
-void Efs::CLI::mkfile(std::string v_filename, std::string contents) {
-  // validity checks
-  if (v_filename == "." || v_filename == "..") {
+void Efs::CLI::mkfile(std::string filename, std::string contents) {
+  // set some initial variables
+  std::string filepath = this->v_current_dir + filename;
+  std::string public_key = this->database->getPublicKeyForUser(this->username);
+
+  // case: If dirname is . or ..
+  if (filename == "." || filename == "..") {
     std::cout << "Cannot use . or .. for a filename" << std::endl;
     return;
   }
 
-  // make sure all dir names end with slash
-  if (this->v_current_dir.back() != '/') this->v_current_dir += "/";
-
-  // set some initial variables
-  std::string v_filepath = v_current_dir + v_filename;
-  std::string public_key = this->database->getPublicKeyForUser(this->username);
-
   // cases: if file already exists and if it doesn't
-  if (this->database->doesFileExist(v_filepath)) {
+  if (this->database->doesFileExist(filepath)) {
     std::cout << "File already exists" << std::endl;
     // TODO: Remove old file
     // TODO: Replace new file
     // TODO: Re-share with all shared users
-  } else {
+    return;
+  }
+
+  try {
     // 1. Register file to database
-    std::string r_filename = this->database->addFile(v_filepath);
+    this->database->addFile(filepath);
 
     // 2. Create the file
-    try {
-      bool res = this->filesystem_service.createFile(v_filepath, contents, public_key);
-      if (!res) {
-        std::cout << "File already exists" << std::endl;
-      } else {
-        std::cout << "Created file!" << std::endl;
-      }
-    } catch (FilesystemService::CreateFileException &ex) {
-      std::cout << "Internal error: Unable to create file" << std::endl;
-    }
+    this->filesystem_service.createFile(filepath, contents, public_key);
+    std::cout << "Created file!" << std::endl;
+  } catch (FilesystemService::CreateFileException &ex) {
+    std::cout << "Internal error: Unable to create file" << std::endl;
   }
 }
 

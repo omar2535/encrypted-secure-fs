@@ -23,9 +23,7 @@ Efs::Efs::Efs(int argc, char** argv) {
   // get the keyfile name
   std::string keyfile_name = argv[1];
 
-  /* KEEP TRACK OF VARIABLES HERE */
-  std::string r_currentDir = (std::string) std::filesystem::current_path(); // TODO: Change this to user's home dir (hashed)
-  std::string v_currentDir = "/"; // TODO: Change this to the user's home dir
+  // login
   std::string username = loginUser(keyfile_name, database);
   if (username.empty()) {
     std::cout << "User not found!" << std::endl;
@@ -33,6 +31,10 @@ Efs::Efs::Efs(int argc, char** argv) {
   } else {
     std::cout << "Welcome back, " + username + "!" << std::endl;
   }
+
+  // intialize dirs
+  std::string r_currentDir = (std::string) std::filesystem::current_path(); // TODO: Remove this
+  std::string v_currentDir = "/" + username + "/";
 
   // initialize the user's CLI
   CLI cli(&database, username);
@@ -65,7 +67,7 @@ Efs::Efs::Efs(int argc, char** argv) {
         continue;
       }
       // Call the cd function and store the returned vector in a variable
-      std::vector<std::string> result = cli.cd(v_currentDir, v_cmd[1], &database);
+      std::vector<std::string> result = cli.cd(v_currentDir, v_cmd[1]);
       // Extract the individual elements from the vector and store them in new string variables
       r_currentDir = result[0];
       v_currentDir = result[1];
@@ -75,14 +77,14 @@ Efs::Efs::Efs(int argc, char** argv) {
         std::cout << "Usage: pwd\n";
         continue;
       }
-      cli.pwd(v_currentDir, &database);
+      cli.pwd(v_currentDir);
     } else if (v_cmd[0] == "ls") {
       if (v_cmd.size() != 1) {
         std::cout << "Incorrect number of arguments!\n";
         std::cout << "Usage: ls\n";
         continue;
       }
-      cli.ls(r_currentDir, &database);
+      cli.ls(r_currentDir);
     } else if (v_cmd[0] == "cat") {
       if (v_cmd.size() != 2) {
         std::cout << "Incorrect number of arguments!\n";
@@ -103,14 +105,14 @@ Efs::Efs::Efs(int argc, char** argv) {
         std::cout << "Usage: adduser <username>";
         continue;
       }
-      cli.adduser(v_cmd[1], &database);
+      cli.adduser(v_cmd[1]);
     } else if (v_cmd[0] == "mkdir") {
       if (v_cmd.size() != 2) {
         std::cout << "Incorrect number of arguments!\n";
         std::cout << "Usage: mkdir <directory>\n";
         continue;
       }
-      cli.mkdir(username, r_currentDir, v_currentDir, v_cmd[1], &database);
+      cli.mkdir(username, r_currentDir, v_currentDir, v_cmd[1]);
     } else if (v_cmd[0] == "mkfile") {
       if (v_cmd.size() < 3) {
         std::cout << "Incorrect number of arguments!\n";

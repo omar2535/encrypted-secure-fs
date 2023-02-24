@@ -5,7 +5,7 @@ Efs::CLI::CLI(Database* database, std::string username) {
   this->username = username;
 }
 
-std::vector<std::string> Efs::CLI::cd(std::string currentDir, std::string targetDir, Database* database) {
+std::vector<std::string> Efs::CLI::cd(std::string currentDir, std::string targetDir) {
   std::string pre_r_currectDir = m_currentDir;
   std::string lastPathComponent = std::filesystem::path(targetDir).filename().string();
   // Handle moving up to the parent directory
@@ -21,7 +21,7 @@ std::vector<std::string> Efs::CLI::cd(std::string currentDir, std::string target
   }
 
   std::string entirePath;
-  entirePath = database->getSha256FromFilePath(currentDir + lastPathComponent + "/");
+  entirePath = this->database->getSha256FromFilePath(currentDir + lastPathComponent + "/");
 
   // Check if the target directory exists
   if (entirePath == "") {
@@ -66,11 +66,11 @@ std::vector<std::string> Efs::CLI::cd(std::string currentDir, std::string target
   return {m_currentDir, v_current_dir};
 }
 
-void Efs::CLI::pwd(std::string currentDir, Database* database) {
+void Efs::CLI::pwd(std::string currentDir) {
   std::cout << currentDir << std::endl;
 }
 
-void Efs::CLI::ls(std::string currentDir, Database* database) {
+void Efs::CLI::ls(std::string currentDir) {
   DIR* dir;
   struct dirent* ent;
   struct stat fileStat;
@@ -120,7 +120,7 @@ void Efs::CLI::ls(std::string currentDir, Database* database) {
     }
 
     //reference the entire filepath:/admin/folder
-    std::string filepath = database->getFilepathFromSha256(entry);
+    std::string filepath = this->database->getFilepathFromSha256(entry);
 
     //check and print entries existed in database
     if(entry.length()==64 && filepath != "") {
@@ -157,8 +157,7 @@ void Efs::CLI::share(std::string currentDir, std::string filepath, std::string t
 }
 
 void Efs::CLI::mkdir(std::string currentUser, std::string r_currentDir,
-                     std::string v_current_dir, std::string v_dirname,
-                     Database* database) {
+                     std::string v_current_dir, std::string v_dirname) {
   // make sure all dir names end with slash
   if (v_current_dir.back() != '/') v_current_dir += "/";
   if (r_currentDir.back() != '/') r_currentDir += "/";
@@ -166,10 +165,10 @@ void Efs::CLI::mkdir(std::string currentUser, std::string r_currentDir,
 
   // set some initial variables
   std::string v_dirpath = v_current_dir + v_dirname;
-  std::string public_key = database->getPublicKeyForUser(currentUser);
+  std::string public_key = this->database->getPublicKeyForUser(currentUser);
 
   // cases: if directory already exists and if it doesn't
-  if (database->doesDirExist(v_dirpath)) {
+  if (this->database->doesDirExist(v_dirpath)) {
     std::cout << "Directory already exists" << std::endl;
   }
   else if(v_dirname=="./" || v_dirname=="../"){
@@ -178,7 +177,7 @@ void Efs::CLI::mkdir(std::string currentUser, std::string r_currentDir,
   else {
     // 1. Register directory to database and encrypt the directory path
     //    with the current user's public key
-    std::string r_dirname = database->addDir(v_dirpath);
+    std::string r_dirname = this->database->addDir(v_dirpath);
 
     // 2. Construct the actual path of the directory on the operating system
     std::string r_dirpath = r_currentDir + r_dirname;
@@ -206,17 +205,17 @@ void Efs::CLI::mkfile(std::string v_filename, std::string contents) {
 
   // set some initial variables
   std::string v_filepath = v_current_dir + v_filename;
-  std::string public_key = database->getPublicKeyForUser(this->username);
+  std::string public_key = this->database->getPublicKeyForUser(this->username);
 
   // cases: if file already exists and if it doesn't
-  if (database->doesFileExist(v_filepath)) {
+  if (this->database->doesFileExist(v_filepath)) {
     std::cout << "File already exists" << std::endl;
     // TODO: Remove old file
     // TODO: Replace new file
     // TODO: Re-share with all shared users
   } else {
     // 1. Register file to database
-    std::string r_filename = database->addFile(v_filepath);
+    std::string r_filename = this->database->addFile(v_filepath);
 
     // 2. Create the file
     try {
@@ -233,11 +232,11 @@ void Efs::CLI::mkfile(std::string v_filename, std::string contents) {
 }
 
 // Add a new user
-void Efs::CLI::adduser(std::string username, Database* database) {
-  UserManager userManager(database);
+void Efs::CLI::adduser(std::string username) {
+  UserManager userManager(this->database);
 
   // Check if the username already exists in the database
-  if (database->doesUserExist(username)) {
+  if (this->database->doesUserExist(username)) {
     std::cout << "User " << username << " already exists" << std::endl;
     return;
   }

@@ -37,7 +37,7 @@ Efs::Efs::Efs(int argc, char** argv) {
   std::string v_currentDir = "/" + username + "/";
 
   // initialize the user's CLI
-  CLI cli(&database, username);
+  CLI cli(&database, username, v_currentDir);
 
   // main loop
   while (true) {

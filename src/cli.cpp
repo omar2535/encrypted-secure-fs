@@ -1,8 +1,9 @@
 #include <efs/cli.h>
 
-Efs::CLI::CLI(Database* database, std::string username) {
+Efs::CLI::CLI(Database* database, std::string username, std::string initial_dir) {
   this->database = database;
   this->username = username;
+  this->v_current_dir = initial_dir;
 }
 
 std::vector<std::string> Efs::CLI::cd(std::string currentDir, std::string targetDir) {

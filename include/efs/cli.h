@@ -25,7 +25,7 @@ namespace Efs {
        *
        * @param database database pointer
        */
-      CLI(Database* database, std::string username);
+      CLI(Database* database, std::string username, std::string initial_dir);
 
       std::vector<std::string> cd(std::string currentDir, std::string targetDir);
       void pwd(std::string currentDir);

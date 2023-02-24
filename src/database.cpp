@@ -75,7 +75,7 @@ std::string Efs::Database::getSha256FromFilePath(std::string filepath) {
 // true if it exists, false otherwise
 bool Efs::Database::doesFileExist(std::string v_filepath) {
   std::string file_hash = Crypto::getSha256ForString(v_filepath);
-  return this->getFilepathFromSha256(v_filepath) != "";
+  return this->getFilepathFromSha256(file_hash) != "";
 }
 
 bool Efs::Database::doesDirExist(std::string v_dirpath) {

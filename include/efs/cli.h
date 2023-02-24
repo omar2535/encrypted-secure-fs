@@ -28,7 +28,7 @@ namespace Efs {
       CLI(Database* database, std::string username, std::string private_key, std::string initial_dir);
 
       void cd(std::string targetDir);
-      std::string cat(std::string filename);
+      void cat(std::string filename);
       void pwd();
       void ls(std::string currentDir);
       void share(std::string filename, std::string targetuser);

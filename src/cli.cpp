@@ -110,22 +110,22 @@ void Efs::CLI::ls(std::string currentDir) {
   }
 }
 
-std::string Efs::CLI::cat(std::string filename) {
+void Efs::CLI::cat(std::string filename) {
   // construct the filepath
   std::string filepath = this->v_current_dir + filename;
 
   // Check if the file exists
   if (!this->database->doesFileExist(filepath)) {
     std::cout << "File does not exist: " << filepath << std::endl;
-    return "";
+    return;
   }
 
   // actual read
   try {
-    return this->filesystem_service.readFile(filepath, this->private_key);
+    std::cout << this->filesystem_service.readFile(filepath, this->private_key) << std::endl;
   } catch (FilesystemService::ReadFileException &ex) {
     std::cout << "Unable to read file" << std::endl;
-    return "";
+    return;
   }
 }
 

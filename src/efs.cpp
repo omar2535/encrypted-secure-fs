@@ -44,7 +44,7 @@ Efs::Efs::Efs(int argc, char** argv) {
   // main loop
   while (true) {
     std::string cmd;
-    std::cout << "(EFS)$ ";
+    std::cout << "[" + username + "@EFS: " + cli.v_current_dir + "]$ ";
     std::getline(std::cin, cmd);
 
     // get command into a vector

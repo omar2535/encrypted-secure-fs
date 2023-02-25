@@ -109,7 +109,7 @@ void Efs::Database::createUser(std::string username) {
   /* For Users_info.json */
 
   // save the public key into the users_info.json
-  std::ifstream ifs(key_pair.public_key);
+  std::ifstream ifs(key_pair.public_key_filename);
   std::string public_key_contents((std::istreambuf_iterator<char>(ifs)),
                                   (std::istreambuf_iterator<char>()));
 
@@ -128,7 +128,7 @@ void Efs::Database::createUser(std::string username) {
 
   /* For Private_keys.json */
   // save the private key into the private_keys.json
-  std::ifstream ifs2(key_pair.private_key);
+  std::ifstream ifs2(key_pair.private_key_filename);
   std::string private_key_contents((std::istreambuf_iterator<char>(ifs2)),
                                    (std::istreambuf_iterator<char>()));
 

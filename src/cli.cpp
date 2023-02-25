@@ -129,48 +129,56 @@ void Efs::CLI::cat(std::string filename) {
   }
 }
 
-void Efs::CLI::share(std::string filename, std::string targetuser) {
+void Efs::CLI::share(std::string filename, std::string target_user) {
   // set some initial variables
-  std::string filepath_current = this->v_current_dir  + filename;
-  std::string dirpath_shared = "/" + targetuser + "/shared/" + this->username + "/";
+  std::string src_filepath = this->v_current_dir + filename;
+  std::string dst_dirpath = "/" + target_user + "/shared/" + this->username + "/";
+  std::string src_private_key = this->private_key;
+  std::string dst_public_key = this->database->getPublicKeyForUser(target_user);
 
-  // error check
-  if (this->username == targetuser) {
+  // Consistency checking first
+  if (filename.back() == '/') {
+    std::cout << "Cannot share a directory" << std::endl;
+    return;
+  }
+  if (this->username == target_user) {
     std::cout << "Target user cannot be current user" << std::endl;
     return;
   }
-  if (!database->doesFileExist(filepath_current)) {
+  if (!this->database->doesFileExist(src_filepath)) {
     std::cout << "File does not exist" << std::endl;
     return;
   }
-  if (!database->doesUserExist(targetuser)) {
+  if (!this->database->doesUserExist(target_user)) {
     std::cout << "User does not exist" << std::endl;
     return;
   }
 
-  // Check target dir
-  if (!database->doesDirExist(dirpath_shared)) {
-    bool res = this->filesystem_service.createDirectory(dirpath_shared);
-    if (!res) {
-      throw std::runtime_error("Error with database and actual dir");
-    }
+  // ADD SOURCE USER'S SHARE FOLDER IF NOT IN THE TARGET'S SHARED
+  if (!database->doesDirExist(dst_dirpath)) {
+    bool res = this->filesystem_service.createDirectory(dst_dirpath);
+    this->database->addDir(dst_dirpath);
   }
-  // decrypt current file content
-  std::string contents;
-  try {
-    this->filesystem_service.readFile(filepath_current, private_key);
-  } catch (FilesystemService::ReadFileException &ex) {
-    std::cout << "Unable to read file" << std::endl;
+
+  /* MAIN PART OF THE PROGRAM */
+  // 1. Construct the destination path
+  std::string dst_filepath = dst_dirpath + filename;
+
+  // 2. Check if the destination filepath already exists
+  if (database->doesFileExist(dst_filepath)) {
+    std::cout << "File already exists!" << std::endl;
+    // TODO: Ask if the user would like to replace the file (in which case just run copy file and return)
     return;
   }
-  std::cout << "File decrypted" << std::endl;
 
-  // make new file
-  // mkfile()
-  // add to database
-  // this->database->addSharedFileForFile(database->getSha256FromFilePath(v_filepath_current), 
-  //                                 database->getSha256FromFilePath(v_filepath_shared));
+  // 3. Copy the file over
+  this->filesystem_service.copyFile(src_filepath, dst_filepath, src_private_key, dst_public_key);
 
+  // 4. Add file entry to target user
+  this->database->addFile(dst_filepath);
+
+  // 5. Add shared entry to shared
+  this->database->addSharedFileForFile(src_filepath, dst_filepath);
 }
 
 
@@ -221,15 +229,22 @@ void Efs::CLI::mkfile(std::string filename, std::string contents) {
     return;
   }
 
-  // cases: if file already exists and if it doesn't
+  // IF FILE ALREADY EXISTS, RE-CREATE IT AN SHARE WITH OTHER USERS
   if (this->database->doesFileExist(filepath)) {
-    std::cout << "File already exists" << std::endl;
-    // TODO: Remove old file
-    // TODO: Replace new file
-    // TODO: Re-share with all shared users
-    return;
+    std::cout << "File already exists, overriting" << std::endl;
+    // create the file (overrite)
+    this->filesystem_service.createFile(filepath, contents, public_key);
+
+    // reshare with all users
+    std::vector<std::string> dst_filepaths = this->database->getSharedFilesForFile(filepath);
+    for (std::string dst_filepath : dst_filepaths) {
+      std::string dst_username = Utils::getOwnerOfPath(dst_filepath);
+      std::string dst_public_key = this->database->getPublicKeyForUser(dst_username);
+      this->filesystem_service.copyFile(filepath, dst_filepath, this->private_key, dst_public_key);
+    }
   }
 
+  // DEFAULT OPERATION: creating a file when it didn't exist previously
   try {
     // 1. Register file to database
     this->database->addFile(filepath);

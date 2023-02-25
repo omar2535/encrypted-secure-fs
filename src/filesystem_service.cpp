@@ -39,17 +39,43 @@ bool Efs::FilesystemService::createFile(std::string v_filepath, std::string cont
   try {
     std::filesystem::path r_filepath = this->convertVirtualPathToRealPath(v_filepath);
 
-    if (!std::filesystem::exists(r_filepath)) {
-      std::ofstream outfile(r_filepath);
-      outfile << contents << std::endl;
-      outfile.close();
-      Crypto::encryptFile(public_key, r_filepath);
-      return true;
-    }
-    return false;
+    std::ofstream outfile(r_filepath, std::ofstream::trunc);
+    outfile << contents << std::endl;
+    outfile.close();
+    Crypto::encryptFile(public_key, r_filepath);
+    return true;
   } catch (const std::exception& ex) {
     std::cerr << "Encountered error:" << ex.what() << std::endl;
     throw CreateFileException("Unable to create file");
+  }
+}
+
+bool Efs::FilesystemService::copyFile(std::string v_src_filepath,
+                                      std::string v_dst_filepath,
+                                      std::string src_private_key,
+                                      std::string dst_public_key) {
+  try {
+    // 1. Decrypt the file contents
+    std::string file_contents = this->readFile(v_src_filepath, src_private_key);
+
+    // 2. Delete any existing file with the filename first (effectively overriting)
+    this->deleteFile(v_dst_filepath);
+
+    // 3. Create a new file in the destination
+    return this->createFile(v_dst_filepath, file_contents, dst_public_key);
+  } catch (const std::exception& ex) {
+    std::cerr << "Encountered error:" << ex.what() << std::endl;
+    throw CopyFileException("Unable to copy file");
+  }
+}
+
+bool Efs::FilesystemService::deleteFile(std::string v_filepath) {
+  try {
+    std::filesystem::path r_filepath = this->convertVirtualPathToRealPath(v_filepath);
+    return std::filesystem::remove(r_filepath);
+  } catch (const std::exception& ex) {
+    std::cerr << "Encountered error:" << ex.what() << std::endl;
+    throw DeleteFileException("Unable to delete file");
   }
 }
 

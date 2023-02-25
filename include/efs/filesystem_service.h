@@ -44,6 +44,27 @@ namespace Efs {
       bool createFile(std::string v_filepath, std::string contents, std::string public_key);
 
       /**
+       * @brief Copies a file from the source filepath to the destination filepath
+       *
+       * @param v_src_filepath the virtual source filepath
+       * @param v_dst_filepath the virtual destination filepath
+       * @param src_private_key the private key for the source filepath
+       * @param dst_public_key the public key to encrypt the destination file with
+       * @return true if successful
+       * @return false  if unsuccessful
+       */
+      bool copyFile(std::string v_src_filepath, std::string v_dst_filepath, std::string src_private_key, std::string dst_public_key);
+
+      /**
+       * @brief Delete a file
+       *
+       * @param v_filepath The virtual filepath
+       * @return true if the file is deleted
+       * @return false if the file isn't deleted
+       */
+      bool deleteFile(std::string v_filepath);
+
+      /**
        * @brief Exception when reading a file fails
        *
        */
@@ -70,13 +91,39 @@ namespace Efs {
       };
 
       /**
-       * @brief Exception when creating a dir fails
+       * @brief Exception when creating a file fails
        *
        */
       class CreateFileException: public std::exception {
         public:
           std::string _msg;
           CreateFileException(const std::string& msg) : _msg(msg){}
+          virtual const char* what() const noexcept override {
+            return _msg.c_str();
+          }
+      };
+
+      /**
+       * @brief Exception when copying a file fails
+       *
+       */
+      class CopyFileException: public std::exception {
+        public:
+          std::string _msg;
+          CopyFileException(const std::string& msg) : _msg(msg){}
+          virtual const char* what() const noexcept override {
+            return _msg.c_str();
+          }
+      };
+
+      /**
+       * @brief Exception when deleting a file fails
+       *
+       */
+      class DeleteFileException: public std::exception {
+        public:
+          std::string _msg;
+          DeleteFileException(const std::string& msg) : _msg(msg){}
           virtual const char* what() const noexcept override {
             return _msg.c_str();
           }

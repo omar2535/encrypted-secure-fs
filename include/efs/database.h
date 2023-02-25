@@ -18,6 +18,7 @@ namespace Efs {
       void initializeDatabase();
 
       /* For File_mappings.json */
+      std::vector<std::string> getAllFilePaths();
       std::string addFile(std::string filepath);
       std::string addDir(std::string dirpath);
       void deleteFile(std::string filepath);

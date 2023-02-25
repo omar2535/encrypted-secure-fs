@@ -52,16 +52,15 @@ void Efs::CLI::pwd() {
 }
 
 void Efs::CLI::ls() {
-  //create entries to store each json path string
+  //create a temporary entries vector read json path from database
+  std::vector<std::string> t_entries;
+  t_entries = this->database->getAllFilePaths();
+
+  //create a entries vector store the actual ls entries
   std::vector<std::string> entries;
 
-  //Open file mappings json file
-  std::ifstream f("File_mappings.json");
-  json data = json::parse(f);
-
-  for (auto& element : data.items()) {
-  	//read entire path in json, /admin/personal/personalsub/
-  	std::string path = element.value();
+  for (const auto& t_entry : t_entries) {
+  	std::string path = t_entry;
 
   	if (path.find(this->v_current_dir) == 0) {
       // the path starts with current_dir, so remove the prefix
@@ -69,7 +68,7 @@ void Efs::CLI::ls() {
       //remove subpath or filename under this directory layer
       if(path.find('/')<path.length()){
         path=path.substr(0, path.find("/")+1);
-	  	}
+      }
       //store modified path into entries
       entries.push_back(path);
   	}
@@ -77,10 +76,8 @@ void Efs::CLI::ls() {
 
   //sort entries alphabetically
   std::sort(entries.begin(), entries.end());
-
   //remove duplicate entry name
   entries.erase(std::unique(entries.begin(), entries.end()), entries.end());
-
   //find empty name="" and remove from entries
   std::vector<std::string>::iterator empty = find(entries.begin(), entries.end(), "");
   entries.erase(empty);
@@ -92,18 +89,17 @@ void Efs::CLI::ls() {
   //print out entries vector
    for (const auto& entry : entries) {
    	//determine if the entry is a file or directory
-    char fileType;
-    if (entry.back()=='/'){
-      fileType='d';
-    }
-    else{
-      fileType='f';
-    }
-
-    //print ls format
+   	char fileType;
+    	if (entry.back()=='/'){
+        	fileType='d';
+        }
+        else{
+        	fileType='f';
+        }
   	std::cout << fileType <<" -> "<< entry << std::endl;
   }
 }
+
 
 void Efs::CLI::cat(std::string filename) {
   // construct the filepath

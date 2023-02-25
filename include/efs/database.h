@@ -35,8 +35,8 @@ namespace Efs {
       std::string getPropertyForUserInfo(std::string username, std::string property);
 
       /* For Shared.json */
-      void addSharedFileForFile(std::string filehash_original, std::string filehash_shared);
-      std::vector<std::string> getAllFilesForFile(std::string filehash_original);
+      void addSharedFileForFile(std::string src_filepath, std::string dst_filepath);
+      std::vector<std::string> getSharedFilesForFile(std::string src_filepath);
 
     private:
       std::string FILE_MAPPINGS_FILE = "File_mappings.json";

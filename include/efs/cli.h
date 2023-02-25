@@ -31,7 +31,7 @@ namespace Efs {
       void cat(std::string filename);
       void pwd();
       void ls(std::string currentDir);
-      void share(std::string filename, std::string targetuser);
+      void share(std::string filename, std::string target_user);
       void mkdir(std::string dirname);
       void mkfile(std::string filename, std::string contents);
       void adduser(std::string username);

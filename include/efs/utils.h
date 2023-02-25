@@ -35,5 +35,20 @@ namespace Efs {
         }
         return seglist;
       }
+
+      /**
+       * @brief Get the Owner Of Path
+       * IE: /admin/asdf -> admin
+       * IE: /randomuser/mydir/file.txt -> randomuser
+       * @param v_path the virtual path
+       * @return std::string returns the username for the owner
+       */
+      static std::string getOwnerOfPath(std::string v_path) {
+        std::vector<std::string> split_path = Utils::splitString(v_path, '/');
+        for (auto name : split_path) {
+          if (name != "") return name;
+        }
+        return "";
+      }
   };
 }

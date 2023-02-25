@@ -143,20 +143,29 @@ std::string Efs::Database::getUsernameByPrivateKey(std::string private_key) {
 
 /* ------------------------------------- */
 /* For Shared.json */
-void Efs::Database::addSharedFileForFile(std::string filehash_original, std::string filehash_shared) {
-  if (!this->shared_json.contains(filehash_original)) {
-    this->shared_json[filehash_original] = {filehash_shared};
+void Efs::Database::addSharedFileForFile(std::string src_filepath, std::string dst_filepath) {
+  std::string src_filepath_hash = Crypto::getSha256ForString(src_filepath);
+  std::string dst_filepath_hash = Crypto::getSha256ForString(dst_filepath);
+
+  if (!this->shared_json.contains(src_filepath_hash)) {
+    this->shared_json[src_filepath_hash] = {dst_filepath_hash};
   } else {
-    this->shared_json[filehash_original].push_back(filehash_shared);
+    this->shared_json[src_filepath_hash].push_back(dst_filepath_hash);
   }
 }
 
-std::vector<std::string> Efs::Database::getAllFilesForFile(std::string filehash_original) {
-  if (this->shared_json.contains(filehash_original)) {
-        return this->shared_json[filehash_original].get<std::vector<std::string>>();
-    } else {
-        return {};
+std::vector<std::string> Efs::Database::getSharedFilesForFile(std::string src_filepath) {
+  std::string src_filepath_hash = Crypto::getSha256ForString(src_filepath);
+  std::vector<std::string> dst_filepaths = {};
+
+  if (this->shared_json.contains(src_filepath_hash)) {
+    std::vector<std::string> res = this->shared_json[src_filepath_hash].get<std::vector<std::string>>();
+    for (std::string dst_filepath_hash : res) {
+      std::string dst_filepath = this->getFilepathFromSha256(dst_filepath_hash);
+      dst_filepaths.push_back(dst_filepath);
     }
+  }
+  return dst_filepaths;
 }
 
 // Checks if the database is initialized

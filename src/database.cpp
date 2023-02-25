@@ -71,14 +71,6 @@ std::string Efs::Database::getSha256FromFilePath(std::string filepath) {
   return Efs::Crypto::getSha256ForString(filepath);
 }
 
-//get File_mappings data
-std::string Efs::Database::getJsonFileData(){
-  std::stringstream buffer;
-  buffer << this->file_mappings_json.dump();
-  std::string fileContents = buffer.str();
-  return fileContents;
-}
-
 // checks if file exists
 // true if it exists, false otherwise
 bool Efs::Database::doesFileExist(std::string v_filepath) {

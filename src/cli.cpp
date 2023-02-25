@@ -34,7 +34,7 @@ void Efs::CLI::cd(std::string targetDir) {
       newDir += "/";
     }
 
-    if (database->getJsonFileData().find(newDir) != std::string::npos) {
+    if (database->doesDirExist(newDir)) {
       this->v_current_dir = newDir;
     } else {
       std::cout << "Target directory does not exist" << std::endl;

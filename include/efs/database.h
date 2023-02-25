@@ -23,7 +23,6 @@ namespace Efs {
       void deleteFile(std::string filepath);
       std::string getFilepathFromSha256(std::string hash_string);
       std::string getSha256FromFilePath(std::string filepath);
-      std::string getJsonFileData();
       bool doesFileExist(std::string v_filepath);
       bool doesDirExist(std::string v_dirpath);
 

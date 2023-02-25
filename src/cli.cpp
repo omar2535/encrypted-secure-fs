@@ -23,7 +23,7 @@ void Efs::CLI::cd(std::string targetDir) {
 
     // find the last '/' before the trailing '/'
     size_t lastSlashPos = this->v_current_dir.find_last_of("/", this->v_current_dir.length() - (endsWithSlash ? 2 : 1));
-    
+
     this->v_current_dir = this->v_current_dir.substr(0, lastSlashPos + 1);
     return;
   } else if (targetDir == ".") {
@@ -51,62 +51,57 @@ void Efs::CLI::pwd() {
   std::cout << v_current_dir << std::endl;
 }
 
-void Efs::CLI::ls(std::string currentDir) {
-  DIR* dir;
-  struct dirent* ent;
-  struct stat fileStat;
+void Efs::CLI::ls() {
+  //create entries to store each json path string
   std::vector<std::string> entries;
 
-  dir = opendir(currentDir.c_str());
-  if (dir == nullptr) {
-    std::cerr << "Error: unable to open directory" << std::endl;
+  //Open file mappings json file
+  std::ifstream f("File_mappings.json");
+  json data = json::parse(f);
+
+  for (auto& element : data.items()) {
+  	//read entire path in json, /admin/personal/personalsub/
+  	std::string path = element.value();
+
+  	if (path.find(this->v_current_dir) == 0) {
+      // the path starts with current_dir, so remove the prefix
+      path.erase(0, this->v_current_dir.length());
+      //remove subpath or filename under this directory layer
+      if(path.find('/')<path.length()){
+        path=path.substr(0, path.find("/")+1);
+	  	}
+      //store modified path into entries
+      entries.push_back(path);
+  	}
   }
 
-  while ((ent = readdir(dir)) != nullptr) {
-    // Get information about the file system entry
-    std::string entryPath = std::string(currentDir.c_str()) + "/" + std::string(ent->d_name);
-
-    if (stat(entryPath.c_str(), &fileStat) == -1) {
-      std::cerr << "Error: unable to get file information for " << ent->d_name << std::endl;
-      continue;
-    }
-    //store every entry into entrires
-    entries.push_back(ent->d_name);
-  }
-
-	//sort entries alphabetically
+  //sort entries alphabetically
   std::sort(entries.begin(), entries.end());
+
+  //remove duplicate entry name
+  entries.erase(std::unique(entries.begin(), entries.end()), entries.end());
+
+  //find empty name="" and remove from entries
+  std::vector<std::string>::iterator empty = find(entries.begin(), entries.end(), "");
+  entries.erase(empty);
+
+  //print . and ..
   std::cout << "d -> . " << std::endl;
   std::cout << "d -> .." << std::endl;
-  // iterate through directory entries
-  for (const auto& entry : entries) {
-    std::string entryPath = std::string(currentDir.c_str()) + "/" + entry;
-    if (stat(entryPath.c_str(), &fileStat) == -1) {
-      std::cerr << "Error: unable to get file information for " << entry << std::endl;
-      continue;
-    }
 
-    // Determine the type of the file system entry
+  //print out entries vector
+   for (const auto& entry : entries) {
+   	//determine if the entry is a file or directory
     char fileType;
-    switch (fileStat.st_mode & S_IFMT) {
-      case S_IFDIR:
-        fileType = 'd';
-        break;
-      case S_IFREG:
-        fileType = 'f';
-        break;
-      default:
-        fileType = '?';
-        break;
+    if (entry.back()=='/'){
+      fileType='d';
+    }
+    else{
+      fileType='f';
     }
 
-    //reference the entire filepath:/admin/folder
-    std::string filepath = this->database->getFilepathFromSha256(entry);
-
-    //check and print entries existed in database
-    if(entry.length()==64 && filepath != "") {
-      std::cout << fileType << " -> "<< Utils::getFilenameFromFilepath(filepath) << std::endl;
-    }
+    //print ls format
+  	std::cout << fileType <<" -> "<< entry << std::endl;
   }
 }
 

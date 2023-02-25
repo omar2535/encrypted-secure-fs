@@ -14,6 +14,10 @@
 #include <efs/user_manager.h>
 #include <efs/filesystem_service.h>
 
+#include <nlohmann/json.hpp>
+#include <string.h>
+using json = nlohmann::json;
+
 namespace Efs {
   class CLI {
     public:

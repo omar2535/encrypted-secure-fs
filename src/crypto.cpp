@@ -194,3 +194,72 @@ std::string Efs::Crypto::decryptFile(std::string private_key, std::string filepa
   infile.close();
   return decryptContent(private_key, ciphertext);
 }
+
+
+std::string Efs::Crypto::base64Encode(const std::string& input) {
+    // Create BIO object to base64 encode
+    BIO* b64 = BIO_new(BIO_f_base64());
+    if (b64 == NULL) {
+        throw std::runtime_error("Failed to create BIO for base64 encoding");
+    }
+    BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
+
+    // Create memory BIO to hold output
+    BIO* mem = BIO_new(BIO_s_mem());
+    if (mem == NULL) {
+        BIO_free_all(b64);
+        throw std::runtime_error("Failed to create memory BIO");
+    }
+
+    // Chain BIOs together
+    mem = BIO_push(b64, mem);
+
+    // Write input to BIO and flush
+    BIO_write(mem, input.c_str(), static_cast<int>(input.length()));
+    BIO_flush(mem);
+
+    // Get encoded output from memory BIO
+    BUF_MEM* mem_buf = NULL;
+    BIO_get_mem_ptr(mem, &mem_buf);
+    std::string output(mem_buf->data, mem_buf->length);
+
+    // Cleanup
+    BIO_free_all(mem);
+
+    return output;
+}
+
+std::string Efs::Crypto::base64Decode(const std::string& input) {
+    // Create BIO object to base64 decode
+    BIO* b64 = BIO_new(BIO_f_base64());
+    if (b64 == NULL) {
+        throw std::runtime_error("Failed to create BIO for base64 decoding");
+    }
+    BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
+
+    // Create memory BIO to hold input
+    BIO* mem = BIO_new_mem_buf(input.c_str(), static_cast<int>(input.length()));
+    if (mem == NULL) {
+        BIO_free_all(b64);
+        throw std::runtime_error("Failed to create memory BIO");
+    }
+
+    // Chain BIOs together
+    mem = BIO_push(b64, mem);
+
+    // Create output buffer
+    char output_buf[input.length()] = {0};
+
+    // Read input from BIO and decode to output buffer
+    int output_len = BIO_read(mem, output_buf, static_cast<int>(input.length()));
+    if (output_len < 0) {
+        BIO_free_all(mem);
+        throw std::runtime_error("Failed to read input for base64 decoding");
+    }
+
+    // Cleanup
+    BIO_free_all(mem);
+
+    // Return output as a string
+    return std::string(output_buf, output_len);
+}

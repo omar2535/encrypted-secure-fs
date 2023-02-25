@@ -11,8 +11,8 @@ Efs::KeyPair Efs::Crypto::generateKeyPair(std::string username) {
   BIO *bp_private = NULL;
   KeyPair keyPair;
 
-  keyPair.public_key = username + "_public.pem";
-  keyPair.private_key = username + "_private.pem";
+  keyPair.public_key_filename = username + "_public.pem";
+  keyPair.private_key_filename = username + "_private.pem";
 
   unsigned long e = RSA_F4;
 
@@ -28,12 +28,12 @@ Efs::KeyPair Efs::Crypto::generateKeyPair(std::string username) {
     if (ret != 1) { throw; }
 
     // 2. Save the public key
-    bp_public = BIO_new_file(keyPair.public_key.c_str(), "w+");
+    bp_public = BIO_new_file(keyPair.public_key_filename.c_str(), "w+");
     ret = PEM_write_bio_RSAPublicKey(bp_public, rsa);
     if (ret != 1) { throw; }
 
     // 3. Save the private key
-    bp_private = BIO_new_file(keyPair.private_key.c_str(), "w+");
+    bp_private = BIO_new_file(keyPair.private_key_filename.c_str(), "w+");
     ret = PEM_write_bio_RSAPrivateKey(bp_private, rsa, NULL, NULL, 0, NULL, NULL);
     if (ret != 1) { throw; }
 

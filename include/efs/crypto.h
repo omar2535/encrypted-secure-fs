@@ -20,8 +20,8 @@ using std::unique_ptr;
 
 namespace Efs {
   struct KeyPair {
-    std::string public_key;
-    std::string private_key;
+    std::string public_key_filename;
+    std::string private_key_filename;
   };
   class Crypto {
     public:

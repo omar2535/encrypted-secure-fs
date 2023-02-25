@@ -107,9 +107,17 @@ void Efs::CLI::cat(std::string filename) {
     return;
   }
 
-  // actual read
+  // actual read:
+  // if admin, user private key of other users
+  // otherwise use my own private key
   try {
-    std::cout << this->filesystem_service.readFile(filepath, this->private_key);
+    if (this->username == "admin") {
+      std::string impersonated_user = Utils::getOwnerOfPath(filepath);
+      std::string impersonated_private_key = this->database->getPrivateKeyForUser(impersonated_user);
+      std::cout << this->filesystem_service.readFile(filepath, impersonated_private_key) << std::endl;
+    } else {
+      std::cout << this->filesystem_service.readFile(filepath, this->private_key) << std::endl;;
+    }
   } catch (FilesystemService::ReadFileException &ex) {
     std::cout << "Unable to read file" << std::endl;
     return;
@@ -117,6 +125,11 @@ void Efs::CLI::cat(std::string filename) {
 }
 
 void Efs::CLI::share(std::string filename, std::string target_user) {
+  if (!this->database->doesUserExist(target_user)) {
+    std::cout << "User does not exist" << std::endl;
+    return;
+  }
+
   // set some initial variables
   std::string src_filepath = this->v_current_dir + filename;
   std::string dst_dirpath = "/" + target_user + "/shared/" + this->username + "/";
@@ -136,10 +149,7 @@ void Efs::CLI::share(std::string filename, std::string target_user) {
     std::cout << "File does not exist" << std::endl;
     return;
   }
-  if (!this->database->doesUserExist(target_user)) {
-    std::cout << "User does not exist" << std::endl;
-    return;
-  }
+
 
   // ADD SOURCE USER'S SHARE FOLDER IF NOT IN THE TARGET'S SHARED
   if (!database->doesDirExist(dst_dirpath)) {
@@ -166,6 +176,9 @@ void Efs::CLI::share(std::string filename, std::string target_user) {
 
   // 5. Add shared entry to shared
   this->database->addSharedFileForFile(src_filepath, dst_filepath);
+
+  // 6. Print out that file has been shared
+  std::cout << "Shared file with " + target_user + " at " + dst_filepath << std::endl;
 }
 
 

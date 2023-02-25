@@ -13,6 +13,7 @@
 #include <efs/utils.h>
 #include <efs/user_manager.h>
 #include <efs/filesystem_service.h>
+#include <string.h>
 
 namespace Efs {
   class CLI {
@@ -30,7 +31,7 @@ namespace Efs {
       void cd(std::string targetDir);
       void cat(std::string filename);
       void pwd();
-      void ls(std::string currentDir);
+      void ls();
       void share(std::string filename, std::string target_user);
       void mkdir(std::string dirname);
       void mkfile(std::string filename, std::string contents);

@@ -24,6 +24,13 @@ Efs::Database::~Database() {
 
 /* ------------------------------------- */
 /* FOR FILE_MAPPINGS_FILE */
+//get entire file path from file_mappings.json
+std::vector<std::string> Efs::Database::getAllFilePaths() {
+  std::vector<std::string> file_paths;
+  for (auto& element : this->file_mappings_json.items())
+    file_paths.push_back(element.value());
+  return file_paths;
+}
 
 // Add a file to the file_mappings.json by getting its SHA256 sum
 std::string Efs::Database::addFile(std::string filepath) {

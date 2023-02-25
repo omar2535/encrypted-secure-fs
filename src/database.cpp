@@ -10,10 +10,12 @@ Efs::Database::Database() {
   std::ifstream fmf(this->FILE_MAPPINGS_FILE);
   std::ifstream sf(this->SHARED_FILE);
   std::ifstream uif(this->USER_INFO_FILE);
+  std::ifstream pkf(this->PRIVATE_KEY_FILE);
 
   this->file_mappings_json = nlohmann::json::parse(fmf);
   this->shared_json = nlohmann::json::parse(sf);
   this->user_info_json = nlohmann::json::parse(uif);
+  this->private_keys_json = nlohmann::json::parse(pkf);
 }
 
 // Destructor: Save the DB before dying
@@ -100,12 +102,14 @@ bool Efs::Database::doesDirExist(std::string v_dirpath) {
 // assumes user doesn't already exist
 void Efs::Database::createUser(std::string username) {
   this->user_info_json[username] = {};
-
+  this->private_keys_json[username] = {};
   // create their public key and private key
-  std::string public_key_filename = Crypto::generateKeyPair(username);
+  KeyPair key_pair = Crypto::generateKeyPair(username);
+
+  /* For Users_info.json */
 
   // save the public key into the users_info.json
-  std::ifstream ifs(public_key_filename);
+  std::ifstream ifs(key_pair.public_key_filename);
   std::string public_key_contents((std::istreambuf_iterator<char>(ifs)),
                                   (std::istreambuf_iterator<char>()));
 
@@ -121,6 +125,15 @@ void Efs::Database::createUser(std::string username) {
   this->user_info_json[username]["root_dir_hash"] = user_root_dir_hash;
   this->user_info_json[username]["personal_dir_hash"] = user_personal_dir_hash;
   this->user_info_json[username]["share_dir_hash"] = user_share_dir_hash;
+
+  /* For Private_keys.json */
+  // save the private key into the private_keys.json
+  std::ifstream ifs2(key_pair.private_key_filename);
+  std::string private_key_contents((std::istreambuf_iterator<char>(ifs2)),
+                                   (std::istreambuf_iterator<char>()));
+
+  // save the private key under the user
+  this->private_keys_json[username]["private_key"] = private_key_contents;                              
 
   // save the json contents into the file
   this->saveDbState();

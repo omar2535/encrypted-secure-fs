@@ -1,8 +1,7 @@
 #include "efs/crypto.h"
 
-std::string Efs::Crypto::generateKeyPair(std::string username) {
-  std::string public_key_filename = username + "_public.pem";
-  std::string private_key_filename = username + "_private.pem";
+//Change this to return a struct with public and private key
+Efs::KeyPair Efs::Crypto::generateKeyPair(std::string username) {
 
   int ret = 0;
   int bits = 2048;
@@ -10,8 +9,13 @@ std::string Efs::Crypto::generateKeyPair(std::string username) {
   BIGNUM *bne = NULL;
   BIO *bp_public = NULL;
   BIO *bp_private = NULL;
+  KeyPair keyPair;
+
+  keyPair.public_key_filename = username + "_public.pem";
+  keyPair.private_key_filename = username + "_private.pem";
 
   unsigned long e = RSA_F4;
+
 
   try {
     // 1. Generate RSA key
@@ -24,12 +28,12 @@ std::string Efs::Crypto::generateKeyPair(std::string username) {
     if (ret != 1) { throw; }
 
     // 2. Save the public key
-    bp_public = BIO_new_file(public_key_filename.c_str(), "w+");
+    bp_public = BIO_new_file(keyPair.public_key_filename.c_str(), "w+");
     ret = PEM_write_bio_RSAPublicKey(bp_public, rsa);
     if (ret != 1) { throw; }
 
     // 3. Save the private key
-    bp_private = BIO_new_file(private_key_filename.c_str(), "w+");
+    bp_private = BIO_new_file(keyPair.private_key_filename.c_str(), "w+");
     ret = PEM_write_bio_RSAPrivateKey(bp_private, rsa, NULL, NULL, 0, NULL, NULL);
     if (ret != 1) { throw; }
 
@@ -42,7 +46,7 @@ std::string Efs::Crypto::generateKeyPair(std::string username) {
   BIO_free_all(bp_private);
   RSA_free(rsa);
   BN_free(bne);
-  return public_key_filename;
+  return keyPair;
 }
 
 

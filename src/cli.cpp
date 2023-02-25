@@ -62,11 +62,14 @@ void Efs::CLI::ls() {
       // the path starts with current_dir, so remove the prefix
       path.erase(0, this->v_current_dir.length());
       //remove subpath or filename under this directory layer
-      if(path.find('/')<path.length()){
+      if(path.find('/')<path.length()&& path !=""){
         path=path.substr(0, path.find("/")+1);
       }
-      //store modified path into entries
-      entries.push_back(path);
+      //check if the reduced path is empty string
+      if(path!=""){
+        //store modified path into entries
+        entries.push_back(path);
+      }
   	}
   }
 
@@ -74,9 +77,6 @@ void Efs::CLI::ls() {
   std::sort(entries.begin(), entries.end());
   //remove duplicate entry name
   entries.erase(std::unique(entries.begin(), entries.end()), entries.end());
-  //find empty name="" and remove from entries
-  std::vector<std::string>::iterator empty = find(entries.begin(), entries.end(), "");
-  entries.erase(empty);
 
   //print . and ..
   std::cout << "d -> . " << std::endl;

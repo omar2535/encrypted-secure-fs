@@ -14,6 +14,10 @@
 #include <efs/user_manager.h>
 #include <efs/filesystem_service.h>
 
+#include <nlohmann/json.hpp>
+#include <string.h>
+using json = nlohmann::json;
+
 namespace Efs {
   class CLI {
     public:
@@ -30,7 +34,7 @@ namespace Efs {
       void cd(std::string targetDir);
       void cat(std::string filename);
       void pwd();
-      void ls(std::string currentDir);
+      void ls();
       void share(std::string filename, std::string targetuser);
       void mkdir(std::string dirname);
       void mkfile(std::string filename, std::string contents);

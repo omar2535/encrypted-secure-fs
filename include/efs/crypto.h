@@ -19,9 +19,13 @@
 using std::unique_ptr;
 
 namespace Efs {
+  struct KeyPair {
+    std::string public_key;
+    std::string private_key;
+  };
   class Crypto {
     public:
-      static std::string generateKeyPair(std::string username);
+      static KeyPair generateKeyPair(std::string username);
       static std::string getSha256ForString(std::string inputstring);
       static std::string encryptContent(std::string public_key, std::string plaintext);
       static std::string decryptContent(std::string private_key, std::string ciphertext);

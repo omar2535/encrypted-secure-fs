@@ -43,15 +43,18 @@ namespace Efs {
       std::string FILE_MAPPINGS_FILE = "File_mappings.json";
       std::string SHARED_FILE = "Shared.json";
       std::string USER_INFO_FILE = "Users_info.json";
+      std::string PRIVATE_KEY_FILE = "Private_keys.json";
 
       nlohmann::json file_mappings_json;
       nlohmann::json shared_json;
       nlohmann::json user_info_json;
+      nlohmann::json private_keys_json;
 
       std::map<std::string, nlohmann::json*> db_files_map = {
         {this->FILE_MAPPINGS_FILE, &(this->file_mappings_json)},
         {this->SHARED_FILE, &(this->shared_json)},
-        {this->USER_INFO_FILE, &(this->user_info_json)}
+        {this->USER_INFO_FILE, &(this->user_info_json)},
+        {this->PRIVATE_KEY_FILE, &(this->private_keys_json)}
       };
 
 

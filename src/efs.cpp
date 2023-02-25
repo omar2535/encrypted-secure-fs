@@ -125,7 +125,7 @@ Efs::Efs::Efs(int argc, char** argv) {
       std::string file_contents = Utils::join(v_file_contents, " ");
 
       // call makefile on the combined file-contents
-      cli.mkfile(v_cmd[1], v_cmd[2]);
+      cli.mkfile(v_cmd[1], file_contents);
     } else if (v_cmd[0] == "exit") {
       std::cout << "Exiting" << std::endl;
       return;

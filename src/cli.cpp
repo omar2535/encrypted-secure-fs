@@ -109,7 +109,7 @@ void Efs::CLI::cat(std::string filename) {
 
   // actual read
   try {
-    std::cout << this->filesystem_service.readFile(filepath, this->private_key) << std::endl;
+    std::cout << this->filesystem_service.readFile(filepath, this->private_key);
   } catch (FilesystemService::ReadFileException &ex) {
     std::cout << "Unable to read file" << std::endl;
     return;

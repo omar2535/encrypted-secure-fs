@@ -34,11 +34,7 @@ void Efs::CLI::cd(std::string targetDir) {
       newDir += "/";
     }
 
-    std::ifstream file("File_mappings.json");
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    std::string fileContents = buffer.str();
-    if (fileContents.find(newDir) != std::string::npos) {
+    if (database->doesDirExist(newDir)) {
       this->v_current_dir = newDir;
     } else {
       std::cout << "Target directory does not exist" << std::endl;

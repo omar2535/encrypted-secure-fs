@@ -8,10 +8,16 @@ Efs::CLI::CLI(Database* database, std::string username, std::string private_key,
 }
 
 void Efs::CLI::cd(std::string targetDir) {
+  // cd / should go to user's root directory
+  if (targetDir == "/"){
+    this->v_current_dir = "/" + this->username + "/";
+    return;
+  }
+
   if (targetDir == "..") {
-    if (this->v_current_dir == "/" + username + "/"){
+    if (this->v_current_dir == "/" + this->username + "/"){
       if (username != "admin"){
-        std::cout << "Permission denied" << std::endl;
+        std::cout << "Forbidden1" << std::endl;
         return;
       }
     }else if (this->v_current_dir == "/")
@@ -29,14 +35,59 @@ void Efs::CLI::cd(std::string targetDir) {
   } else if (targetDir == ".") {
     return;
   } else {
-    std::string newDir = this->v_current_dir + targetDir;
-    if (newDir.find_last_of("/")!= newDir.length() - 1) {
-      newDir += "/";
+    // Split the targetDir string into individual directory names
+    std::vector<std::string> dirs;
+    std::istringstream iss(targetDir);
+    std::string dir;
+    while (getline(iss, dir, '/')) {
+      if (!dir.empty()) {
+        dirs.push_back(dir);
+      }
+    }
+
+    // Navigate through the directory tree
+    std::string newDir = this->v_current_dir;
+    for (const auto& dir : dirs) {
+      if (dir == "..") {
+        bool endsWithSlash = newDir.back() == '/';
+        size_t lastSlashPos = newDir.find_last_of("/", newDir.length() - (endsWithSlash ? 2 : 1));
+        newDir = newDir.substr(0, lastSlashPos + 1);
+      } else {
+        newDir += dir + "/";
+      }
+    }
+
+    if (targetDir.find_last_of("/")!= targetDir.length() - 1) {
+      targetDir += "/";
+    }
+
+    if (this->username != "admin") {
+      if (newDir.find("/" + this->username + "/") == std::string::npos) {
+        std::cout << "Forbidden4" << std::endl;
+        return;
+      }
     }
 
     if (database->doesDirExist(newDir)) {
       this->v_current_dir = newDir;
+    }
+    else if (newDir == "/"){
+      if (this->username != "admin") {
+        std::cout << "Forbidden3" << std::endl;
+          return;
+      }
     } else {
+      if (this->username != "admin") {
+        if (newDir.find("/" + this->username + "/") && targetDir.find("/" + this->username + "/") == std::string::npos) {
+          std::cout << "Forbidden2" << std::endl;
+          return;
+        }
+      }else{
+        if (database->doesDirExist(targetDir)){
+          this->v_current_dir = targetDir;
+          return;
+        }
+      }
       std::cout << "Target directory does not exist" << std::endl;
       return;
     }
@@ -188,6 +239,11 @@ void Efs::CLI::mkdir(std::string dirname) {
       std::cout << "Forbidden" << std::endl;
       return;
     }
+  }else{
+    if (this->v_current_dir != "/" && this->v_current_dir.find(this->username) == std::string::npos){
+      std::cout << "Forbidden" << std::endl;
+      return;
+    }
   }
   if (dirname.back() != '/') dirname += "/";
 
@@ -227,6 +283,11 @@ void Efs::CLI::mkdir(std::string dirname) {
 void Efs::CLI::mkfile(std::string filename, std::string contents) {
   if (this->username != "admin"){
     if (this->v_current_dir.find("/" + this->username + "/" + "personal/") == std::string::npos){
+      std::cout << "Forbidden" << std::endl;
+      return;
+    }
+  }else{
+    if (this->v_current_dir != "/" && this->v_current_dir.find(this->username) == std::string::npos){
       std::cout << "Forbidden" << std::endl;
       return;
     }

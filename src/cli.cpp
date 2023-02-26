@@ -170,6 +170,13 @@ void Efs::CLI::share(std::string filename, std::string target_user) {
 
 
 void Efs::CLI::mkdir(std::string dirname) {
+  if (this->username != "admin"){
+    if (this->v_current_dir.find("/" + this->username + "/" + "personal/") == std::string::npos){
+      std::cout << this->v_current_dir << std::endl;
+      std::cout << "Forbidden" << std::endl;
+      return;
+    }
+  }
   if (dirname.back() != '/') dirname += "/";
 
   // set some initial variables
@@ -206,6 +213,12 @@ void Efs::CLI::mkdir(std::string dirname) {
 // makes the file with the given contents
 // if already exists, overwrite the file and re-share with all shared users
 void Efs::CLI::mkfile(std::string filename, std::string contents) {
+  if (this->username != "admin"){
+    if (this->v_current_dir.find("/" + this->username + "/" + "personal/") == std::string::npos){
+      std::cout << "Forbidden" << std::endl;
+      return;
+    }
+  }
   // set some initial variables
   std::string filepath = this->v_current_dir + filename;
   std::string public_key = this->database->getPublicKeyForUser(this->username);

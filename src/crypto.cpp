@@ -64,7 +64,7 @@ std::string Efs::Crypto::getSha256ForString(std::string inputstring) {
   return ss.str();
 }
 
-
+/* ENCRYPTS A STRING GIVEN A PUBLIC KEY. ENCRYPTS ONLY UP TO THE PUBLIC_KEY_SIZE. ANY MORE WILL CAUSE ERROR*/
 std::string Efs::Crypto::encryptContent(std::string public_key, std::string plaintext) {
   if (plaintext.length() == 0) {
     throw std::invalid_argument("Empty plaintext");
@@ -95,10 +95,9 @@ std::string Efs::Crypto::encryptContent(std::string public_key, std::string plai
   }
 }
 
-
 std::string Efs::Crypto::decryptContent(std::string private_key, std::string ciphertext) {
   if (ciphertext.length() == 0) {
-    throw std::invalid_argument("Empty plaintext");
+    throw std::invalid_argument("Empty ciphertext");
   }
   // Get privat key
   BIO *pri_bio = BIO_new_mem_buf(private_key.c_str(), -1);
@@ -156,7 +155,20 @@ void Efs::Crypto::encryptFile(std::string public_key, std::string filepath) {
   infile.close();
 
   // encrypt
-  std::string ciphertext = encryptContent(public_key, plaintext);
+  // chunk the ciphertext
+  std::string ciphertext = "";
+  int CHUNK_SIZE = 100;
+
+  for (int i = 0; i < plaintext.length(); i+= CHUNK_SIZE) {
+    int remaining_bytes = plaintext.length() - i;
+    std::string plaintext_chunk;
+    if (remaining_bytes < CHUNK_SIZE) {
+      plaintext_chunk = plaintext.substr(i, remaining_bytes);
+    } else {
+      plaintext_chunk = plaintext.substr(i, CHUNK_SIZE);
+    }
+    ciphertext += encryptContent(public_key, plaintext_chunk);
+  }
 
   // write file
   std::ofstream outfile(filepath, std::ios::trunc);
@@ -192,5 +204,18 @@ std::string Efs::Crypto::decryptFile(std::string private_key, std::string filepa
     throw std::runtime_error("Error reading file");
   }
   infile.close();
-  return decryptContent(private_key, ciphertext);
+
+  std::string plaintext = "";
+  int CHUNK_SIZE = 256;
+  for (int i=0; i < ciphertext.length(); i+= CHUNK_SIZE) {
+    int remaining_bytes = ciphertext.length() - i;
+    std::string ciphertext_chunk;
+    if (remaining_bytes < CHUNK_SIZE) {
+      ciphertext_chunk = ciphertext.substr(i, remaining_bytes);
+    } else {
+      ciphertext_chunk = ciphertext.substr(i, CHUNK_SIZE);
+    }
+    plaintext += decryptContent(private_key, ciphertext_chunk);
+  }
+  return plaintext;
 }

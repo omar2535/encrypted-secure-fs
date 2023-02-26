@@ -218,8 +218,8 @@ void Efs::Database::initializeAdminDatabase(std::string private_key) {
     output.close();
     this->private_keys_json = nlohmann::json::object();
   } else {
-    // std::string private_key_file_decrypted = Crypto::decryptFile(private_key, this->PRIVATE_KEY_FILE);
-    std::ifstream private_key_file_decrypted(this->PRIVATE_KEY_FILE);
+    std::string private_key_file_decrypted = Crypto::decryptFile(private_key, this->PRIVATE_KEY_FILE);
+    // std::ifstream private_key_file_decrypted(this->PRIVATE_KEY_FILE);
     this->private_keys_json = nlohmann::json::parse(private_key_file_decrypted);
   }
 }
@@ -267,12 +267,11 @@ void Efs::Database::savePrivateKeysState() {
   output.close();
 
 
-  // try {
-  //   std::string admin_public_key = this->getPublicKeyForUser("admin");
-  //   std::string file_path = this->PRIVATE_KEY_FILE;
-  //   std::cout << "Encrypting for " << admin_public_key << " " << file_path << std::endl;
-  //   Crypto::encryptFile(admin_public_key, file_path);
-  // } catch (const std::exception &ex) {
-  //   std::cout << ex.what() << std::endl;
-  // }
+  try {
+    std::string admin_public_key = this->getPublicKeyForUser("admin");
+    std::string file_path = this->PRIVATE_KEY_FILE;
+    Crypto::encryptFile(admin_public_key, file_path);
+  } catch (const std::exception &ex) {
+    std::cout << ex.what() << std::endl;
+  }
 }

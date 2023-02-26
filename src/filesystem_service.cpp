@@ -40,7 +40,7 @@ bool Efs::FilesystemService::createFile(std::string v_filepath, std::string cont
     std::filesystem::path r_filepath = this->convertVirtualPathToRealPath(v_filepath);
 
     std::ofstream outfile(r_filepath, std::ofstream::trunc);
-    outfile << contents << std::endl;
+    outfile << contents;
     outfile.close();
     Crypto::encryptFile(public_key, r_filepath);
     return true;

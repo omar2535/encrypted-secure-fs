@@ -83,10 +83,12 @@ std::string Efs::Crypto::encryptContent(std::string public_key, std::string plai
   BIO_free(pub_bio);
 
   // Encrypt
-  unsigned char* plaintext_char = reinterpret_cast<unsigned char*>(&plaintext[0]);
+  const unsigned char* plaintext_char = reinterpret_cast<const unsigned char*>(plaintext.c_str());
   unsigned char* ciphertext_char  = new unsigned char[RSA_size(pub_rsa)];
-  int ciphertext_length = RSA_public_encrypt(plaintext.length(), plaintext_char, ciphertext_char, pub_rsa, RSA_PKCS1_OAEP_PADDING);
+  int ciphertext_length = RSA_public_encrypt(plaintext.size(), plaintext_char, ciphertext_char, pub_rsa, RSA_PKCS1_OAEP_PADDING);
   if ( -1 == ciphertext_length) {
+    RSA_free(pub_rsa);
+    delete[] ciphertext_char;
     throw std::runtime_error("Encryption failed");
   } else {
     return std::string (reinterpret_cast<char*>(ciphertext_char), ciphertext_length);
@@ -145,7 +147,7 @@ void Efs::Crypto::encryptFile(std::string public_key, std::string filepath) {
     return;
   }
   std::string plaintext((std::istreambuf_iterator<char>(infile)),
-                            std::istreambuf_iterator<char>());
+                         std::istreambuf_iterator<char>());
   if (infile.fail() && !infile.eof()) {
     std::cerr << "Error: Failed to read data from file '" << filepath << "'" << std::endl;
     infile.close();

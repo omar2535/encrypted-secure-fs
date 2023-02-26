@@ -30,9 +30,12 @@ Efs::Efs::Efs(int argc, char** argv) {
   if (username.empty()) {
     std::cout << "User not found!" << std::endl;
     return;
-  } else {
-    std::cout << "Welcome back, " + username + "!" << std::endl;
   }
+  else if (username == "admin") {
+    database.initializeAdminDatabase(privateKeyStr);
+  }
+
+  std::cout << "Welcome back, " + username + "!" << std::endl;
 
   // intialize dirs
   std::string r_currentDir = (std::string) std::filesystem::current_path(); // TODO: Remove this

@@ -32,5 +32,7 @@ namespace Efs {
       static bool validatePrivateKey(std::string privateKeyStr, std::string publicKeyStr);
       static void encryptFile(std::string public_key, std::string filepath);
       static std::string decryptFile(std::string private_key, std::string filepath);
+      static std::string base64Encode(const std::string& input);
+      static std::string base64Decode(const std::string& input);
   };
 }

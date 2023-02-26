@@ -15,7 +15,6 @@ Efs::Database::Database() {
   this->file_mappings_json = nlohmann::json::parse(fmf);
   this->shared_json = nlohmann::json::parse(sf);
   this->user_info_json = nlohmann::json::parse(uif);
-  this->private_keys_json = nlohmann::json::parse(pkf);
 }
 
 // Destructor: Save the DB before dying
@@ -100,7 +99,10 @@ bool Efs::Database::doesDirExist(std::string v_dirpath) {
 
 // create a new user
 // assumes user doesn't already exist
+// assumes only admin can call this function
 void Efs::Database::createUser(std::string username) {
+  if (username == "admin") this->is_admin = true;
+
   this->user_info_json[username] = {};
   this->private_keys_json[username] = {};
   // create their public key and private key
@@ -133,7 +135,7 @@ void Efs::Database::createUser(std::string username) {
                                    (std::istreambuf_iterator<char>()));
 
   // save the private key under the user
-  this->private_keys_json[username]["private_key"] = private_key_contents;                              
+  this->private_keys_json[username] = private_key_contents;
 
   // save the json contents into the file
   this->saveDbState();
@@ -207,6 +209,21 @@ void Efs::Database::initializeDatabase() {
   }
 }
 
+void Efs::Database::initializeAdminDatabase(std::string private_key) {
+  this->is_admin = true;
+
+  if (!std::filesystem::exists(this->PRIVATE_KEY_FILE)) {
+    std::ofstream output(this->PRIVATE_KEY_FILE);
+    output << nlohmann::json::object();
+    output.close();
+    this->private_keys_json = nlohmann::json::object();
+  } else {
+    // std::string private_key_file_decrypted = Crypto::decryptFile(private_key, this->PRIVATE_KEY_FILE);
+    std::ifstream private_key_file_decrypted(this->PRIVATE_KEY_FILE);
+    this->private_keys_json = nlohmann::json::parse(private_key_file_decrypted);
+  }
+}
+
 // Get's a user's property based on the key
 // assuems the retrieved property is a string
 std::string Efs::Database::getPropertyForUserInfo(std::string username, std::string property) {
@@ -218,6 +235,18 @@ std::string Efs::Database::getPropertyForUserInfo(std::string username, std::str
   }
 }
 
+
+/* ------------------------------------- */
+/* For Private_keys.json */
+std::string Efs::Database::getPrivateKeyForUser(std::string username) {
+  try {
+    return this->private_keys_json[username].get<std::string>();
+  } catch (const std::exception &ex) {
+    return "";
+  }
+}
+
+
 /* PRIVATE METHODS */
 void Efs::Database::saveDbState() {
   for (auto const& [dbfile, dbjson] : this->db_files_map) {
@@ -225,4 +254,25 @@ void Efs::Database::saveDbState() {
     output << std::setw(2) << *dbjson << std::endl;
     output.close();
   }
+
+  if (this->is_admin) {
+    this->savePrivateKeysState();
+  }
+}
+
+// save private keys file and then encrypt
+void Efs::Database::savePrivateKeysState() {
+  std::ofstream output(this->PRIVATE_KEY_FILE);
+  output << std::setw(2) << this->private_keys_json << std::endl;
+  output.close();
+
+
+  // try {
+  //   std::string admin_public_key = this->getPublicKeyForUser("admin");
+  //   std::string file_path = this->PRIVATE_KEY_FILE;
+  //   std::cout << "Encrypting for " << admin_public_key << " " << file_path << std::endl;
+  //   Crypto::encryptFile(admin_public_key, file_path);
+  // } catch (const std::exception &ex) {
+  //   std::cout << ex.what() << std::endl;
+  // }
 }

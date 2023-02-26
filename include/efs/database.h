@@ -13,9 +13,10 @@ namespace Efs {
       Database();
       ~Database();
 
-      /* Checks if DB is intiialized*/
+      /* DB initialization */
       bool isDatabaseInitialized();
       void initializeDatabase();
+      void initializeAdminDatabase(std::string private_key);
 
       /* For File_mappings.json */
       std::vector<std::string> getAllFilePaths();
@@ -39,7 +40,12 @@ namespace Efs {
       void addSharedFileForFile(std::string src_filepath, std::string dst_filepath);
       std::vector<std::string> getSharedFilesForFile(std::string src_filepath);
 
+      /* For Private_keys.json */
+      std::string getPrivateKeyForUser(std::string username);
+
     private:
+      bool is_admin = false;
+
       std::string FILE_MAPPINGS_FILE = "File_mappings.json";
       std::string SHARED_FILE = "Shared.json";
       std::string USER_INFO_FILE = "Users_info.json";
@@ -54,11 +60,11 @@ namespace Efs {
         {this->FILE_MAPPINGS_FILE, &(this->file_mappings_json)},
         {this->SHARED_FILE, &(this->shared_json)},
         {this->USER_INFO_FILE, &(this->user_info_json)},
-        {this->PRIVATE_KEY_FILE, &(this->private_keys_json)}
       };
 
 
       /* For functions to call */
       void saveDbState();
+      void savePrivateKeysState();
   };
 } // Efs namespace

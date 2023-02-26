@@ -172,7 +172,6 @@ void Efs::CLI::share(std::string filename, std::string target_user) {
 void Efs::CLI::mkdir(std::string dirname) {
   if (this->username != "admin"){
     if (this->v_current_dir.find("/" + this->username + "/" + "personal/") == std::string::npos){
-      std::cout << this->v_current_dir << std::endl;
       std::cout << "Forbidden" << std::endl;
       return;
     }

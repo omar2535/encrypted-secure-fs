@@ -17,7 +17,7 @@ void Efs::CLI::cd(std::string targetDir) {
   if (targetDir == "..") {
     if (this->v_current_dir == "/" + this->username + "/"){
       if (username != "admin"){
-        std::cout << "Forbidden1" << std::endl;
+        std::cout << "Forbidden" << std::endl;
         return;
       }
     }else if (this->v_current_dir == "/")
@@ -63,7 +63,7 @@ void Efs::CLI::cd(std::string targetDir) {
 
     if (this->username != "admin") {
       if (newDir.find("/" + this->username + "/") == std::string::npos) {
-        std::cout << "Forbidden4" << std::endl;
+        std::cout << "Forbidden" << std::endl;
         return;
       }
     }
@@ -73,13 +73,14 @@ void Efs::CLI::cd(std::string targetDir) {
     }
     else if (newDir == "/"){
       if (this->username != "admin") {
-        std::cout << "Forbidden3" << std::endl;
+        std::cout << "Forbidden" << std::endl;
           return;
       }
+      this->v_current_dir = "/";
     } else {
       if (this->username != "admin") {
         if (newDir.find("/" + this->username + "/") && targetDir.find("/" + this->username + "/") == std::string::npos) {
-          std::cout << "Forbidden2" << std::endl;
+          std::cout << "Forbidden" << std::endl;
           return;
         }
       }else{

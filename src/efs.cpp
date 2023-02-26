@@ -37,8 +37,7 @@ Efs::Efs::Efs(int argc, char** argv) {
 
   std::cout << "Welcome back, " + username + "!" << std::endl;
 
-  // intialize dirs
-  std::string r_currentDir = (std::string) std::filesystem::current_path(); // TODO: Remove this
+  // intialize dir
   std::string v_currentDir = "/" + username + "/";
 
   // initialize the user's CLI

@@ -31,7 +31,7 @@ namespace Efs {
         std::string segment;
         std::vector<std::string> seglist;
         while(std::getline(ss_input, segment, delim)) {
-          seglist.push_back(segment);
+          if (!segment.empty()) seglist.push_back(segment);
         }
         return seglist;
       }
@@ -49,6 +49,18 @@ namespace Efs {
           if (name != "") return name;
         }
         return "";
+      }
+
+      /**
+       * @brief Determines if the v_path is in the personal folder
+       *
+       * @param v_path the virtual path
+       * @return true if they are in their personal directory </usera/personal/>
+       * @return false if they are not </usera/shared>
+       */
+      static bool isInPersonal(std::string v_path, std::string username) {
+        std::vector<std::string> split_path = Utils::splitString(v_path, '/');
+        return split_path.size() >= 2 && split_path[1] == "personal" && username == split_path[0];
       }
   };
 }

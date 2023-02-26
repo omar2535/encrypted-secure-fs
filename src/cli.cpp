@@ -35,61 +35,52 @@ void Efs::CLI::cd(std::string targetDir) {
   } else if (targetDir == ".") {
     return;
   } else {
-    // Split the targetDir string into individual directory names
-    std::vector<std::string> dirs;
-    std::istringstream iss(targetDir);
-    std::string dir;
-    while (getline(iss, dir, '/')) {
-      if (!dir.empty()) {
-        dirs.push_back(dir);
-      }
-    }
-
-    // Navigate through the directory tree
-    std::string newDir = this->v_current_dir;
-    for (const auto& dir : dirs) {
-      if (dir == "..") {
-        bool endsWithSlash = newDir.back() == '/';
-        size_t lastSlashPos = newDir.find_last_of("/", newDir.length() - (endsWithSlash ? 2 : 1));
-        newDir = newDir.substr(0, lastSlashPos + 1);
-      } else {
-        newDir += dir + "/";
-      }
-    }
-
-    if (targetDir.find_last_of("/")!= targetDir.length() - 1) {
+    // make sure targetDir is a directory
+    if (targetDir.back() != '/') {
       targetDir += "/";
     }
 
-    if (this->username != "admin") {
-      if (newDir.find("/" + this->username + "/") == std::string::npos) {
-        std::cout << "Forbidden" << std::endl;
-        return;
+    // Split the targetDir string into individual directory names
+    std::vector<std::string> dirs = Utils::splitString(targetDir, '/');
+
+    // Construct a temporary directory path
+    std::string temp_dir_path = this->v_current_dir;
+    for (const auto& dir : dirs) {
+      if (dir == "..") {
+        bool endsWithSlash = temp_dir_path.back() == '/';
+        size_t lastSlashPos = temp_dir_path.find_last_of("/", temp_dir_path.length() - (endsWithSlash ? 2 : 1));
+        temp_dir_path = temp_dir_path.substr(0, lastSlashPos + 1);
+      } else {
+        temp_dir_path += dir + "/";
       }
     }
 
-    if (database->doesDirExist(newDir)) {
-      this->v_current_dir = newDir;
-    }
-    else if (newDir == "/"){
-      if (this->username != "admin") {
+    // if the user isn't admin
+    if (this->username != "admin") {
+      // if not the owner of the path
+      if (Utils::getOwnerOfPath(temp_dir_path) != this->username) {
         std::cout << "Forbidden" << std::endl;
-          return;
+        return;
       }
-      this->v_current_dir = "/";
-    } else {
-      if (this->username != "admin") {
-        if (newDir.find("/" + this->username + "/") && targetDir.find("/" + this->username + "/") == std::string::npos) {
-          std::cout << "Forbidden" << std::endl;
-          return;
-        }
-      }else{
-        if (database->doesDirExist(targetDir)){
-          this->v_current_dir = targetDir;
-          return;
-        }
+
+      // if directory doesn't exist
+      if (!database->doesDirExist(temp_dir_path)) {
+        std::cout << "Target directory does not exist" << std::endl;
+        return;
       }
-      std::cout << "Target directory does not exist" << std::endl;
+
+      this->v_current_dir = temp_dir_path;
+      return;
+    }
+
+    // if user is admin
+    if (this->username == "admin") {
+      // if directory doesn't exist
+      if (!database->doesDirExist(temp_dir_path) && temp_dir_path != "/") {
+        std::cout << "Target directory doesn't exist" << std::endl;
+        return;
+      }
+      this->v_current_dir = temp_dir_path;
       return;
     }
   }
@@ -215,7 +206,7 @@ void Efs::CLI::share(std::string filename, std::string target_user) {
 
   // 2. Check if the destination filepath already exists
   if (database->doesFileExist(dst_filepath)) {
-    std::cout << "File already exists!" << std::endl;
+    std::cout << "A file with the same name was already shared. Please rename the file to share" << std::endl;
     // TODO: Ask if the user would like to replace the file (in which case just run copy file and return)
     return;
   }
@@ -235,17 +226,11 @@ void Efs::CLI::share(std::string filename, std::string target_user) {
 
 
 void Efs::CLI::mkdir(std::string dirname) {
-  if (this->username != "admin"){
-    if (this->v_current_dir.find("/" + this->username + "/" + "personal/") == std::string::npos){
-      std::cout << "Forbidden" << std::endl;
-      return;
-    }
-  }else{
-    if (this->v_current_dir != "/" && this->v_current_dir.find(this->username) == std::string::npos){
-      std::cout << "Forbidden" << std::endl;
-      return;
-    }
+  if (!Utils::isInPersonal(this->v_current_dir, this->username)){
+    std::cout << "Forbidden" << std::endl;
+    return;
   }
+
   if (dirname.back() != '/') dirname += "/";
 
   // set some initial variables
@@ -282,17 +267,11 @@ void Efs::CLI::mkdir(std::string dirname) {
 // makes the file with the given contents
 // if already exists, overwrite the file and re-share with all shared users
 void Efs::CLI::mkfile(std::string filename, std::string contents) {
-  if (this->username != "admin"){
-    if (this->v_current_dir.find("/" + this->username + "/" + "personal/") == std::string::npos){
-      std::cout << "Forbidden" << std::endl;
-      return;
-    }
-  }else{
-    if (this->v_current_dir != "/" && this->v_current_dir.find(this->username) == std::string::npos){
-      std::cout << "Forbidden" << std::endl;
-      return;
-    }
+  if (!Utils::isInPersonal(this->v_current_dir, this->username)){
+    std::cout << "Forbidden" << std::endl;
+    return;
   }
+
   // set some initial variables
   std::string filepath = this->v_current_dir + filename;
   std::string public_key = this->database->getPublicKeyForUser(this->username);

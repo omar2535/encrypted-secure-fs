@@ -3,6 +3,29 @@
 ![C++](https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white)
 ![CMake](https://img.shields.io/badge/CMake-%23008FBA.svg?style=for-the-badge&logo=cmake&logoColor=white)
 
+## 🪟 Overview
+
+This project is a simulation of a filesystem where all files are encrypetd. Users may use this program as a way to manage their files and directories without having other people know what the contents of the files are (with the exception of the admin).
+
+Currently, the supported commands are:
+
+| Command | Description |
+| --- | --- |
+| cd <directory> | Move the directory up or down (IE. `cd ..`) |
+| pwd | Prints the present working directory |
+| ls | Lists all files in the current directory |
+| cat <filename> | Outputs contents in a file |
+| share <filename> <username> | Shares a file with a user (IE. `share myfile.txt bob`) |
+| mkdir <dirname> | Creates a directory (IE. `mkdir mydir`) |
+| mkfile <filename> <content> | Creates a file with the given filename and contents (IE. `mkfile hello.txt hello world!`) |
+| exit | Terminates the program |
+
+There are also **admin** specific features in addition to the ones presented above.
+
+| Command | Description |
+| --- | --- |
+| addduser <username> | Creates a user with the given username (IE. `adduser bob`) |
+
 ## ⌨️ Getting started
 
 **1. Cloning the repository (only once):**

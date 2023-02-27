@@ -231,19 +231,27 @@ void Efs::CLI::mkdir(std::string dirname) {
     return;
   }
 
+  // case: If dirname is . or ..
+  if(!Utils::isValidName(dirname)) {
+  	std::cout << "Invalid directory name" << std::endl;
+    return;
+  }
+
+  // make sure dirname has slash at the end
   if (dirname.back() != '/') dirname += "/";
 
-  // set some initial variables
+  // set the entire dirpath
   std::string dirpath = this->v_current_dir + dirname;
 
-  // case: If dirname is . or ..
-  if(dirname == "." || dirname == ".."){
-  	std::cout << "Cannot use . or .. for a directory name" << std::endl;
+  // case: If a file with the same name exists
+  std::string filepath = dirpath.substr(0, dirpath.size()-1);
+  if (this->database->doesFileExist(filepath)) {
+    std::cout << "File with same name already exists. Abandoning." << std::endl;
     return;
   }
 
   // case: if directory already exists
-  if (this->database->doesDirExist(dirname)) {
+  if (this->database->doesDirExist(dirpath)) {
     std::cout << "Directory already exists" << std::endl;
     return;
   }
@@ -276,9 +284,15 @@ void Efs::CLI::mkfile(std::string filename, std::string contents) {
   std::string filepath = this->v_current_dir + filename;
   std::string public_key = this->database->getPublicKeyForUser(this->username);
 
-  // case: If dirname is . or ..
-  if (filename == "." || filename == "..") {
-    std::cout << "Cannot use . or .. for a filename" << std::endl;
+  // case: check if filename is valid
+  if (!Utils::isValidName(filename)) {
+    std::cout << "Invalid filename" << std::endl;
+    return;
+  }
+
+  // case: If a directory with the same name exits
+  if (this->database->doesDirExist(filepath + '/')) {
+    std::cout << "A directory with the same name already exists. Not creating." << std::endl;
     return;
   }
 

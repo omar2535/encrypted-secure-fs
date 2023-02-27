@@ -4,6 +4,7 @@
 #include <iterator>
 #include <sstream>
 #include <vector>
+#include <regex>
 
 namespace Efs {
   class Utils {
@@ -61,6 +62,31 @@ namespace Efs {
       static bool isInPersonal(std::string v_path, std::string username) {
         std::vector<std::string> split_path = Utils::splitString(v_path, '/');
         return split_path.size() >= 2 && split_path[1] == "personal" && username == split_path[0];
+      }
+
+      /**
+       * @brief Checks if the name is valid
+       *
+       * @param name directory name or filename
+       * @return true if the name is valid
+       * @return false if it is not
+       */
+      static bool isValidName(std::string name) {
+        // if dirname is empty
+        if (name == "") return false;
+
+        // if dirname is . or .. or /
+        if (name == "." || name == ".." || name == "/") return false;
+
+        // if dirname has slashes inside
+        if (name.find('/') != std::string::npos) return false;
+
+        // if dirname starts with .
+        if (name.find('.') == 0) return false;
+
+        // check dirname is ASCII
+        const std::regex pattern(R"(^[a-zA-Z0-9_.-]+$)");
+        return std::regex_match(name, pattern);
       }
   };
 }

@@ -79,6 +79,18 @@ cmake --build build           # Compiles and builds the Spotter application
 ./build/fileserver <keyfile>
 ```
 
+## 🐳 Getting Started (with docker)
+
+If you want to use docker:
+
+```sh
+sudo docker build -t local/efs_image .
+sudo docker run -d --name efs local/efs_image
+sudo docker exec -it efs /bin/bash
+
+root@image_id:/efs# ./build/fileserver
+```
+
 ## ⚒️ Development
 
 ### Visual Studio Code

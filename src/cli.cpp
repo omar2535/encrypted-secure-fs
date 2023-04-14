@@ -328,6 +328,12 @@ void Efs::CLI::mkfile(std::string filename, std::string contents) {
 void Efs::CLI::adduser(std::string username) {
   UserManager userManager(this->database);
 
+  // check if the user is admin
+  if (this->username != "admin") {
+    std::cout << "Forbidden" << std::endl;
+    return;
+  }
+
   // Check if the username already exists in the database
   if (this->database->doesUserExist(username)) {
     std::cout << "User " << username << " already exists" << std::endl;

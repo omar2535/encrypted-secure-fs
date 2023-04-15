@@ -20,6 +20,12 @@ Efs::Efs::Efs(int argc, char** argv) {
     return;
   }
 
+  // if keyfile doesn't exist or isn't a valid file
+  if (!std::filesystem::is_regular_file(argv[1])) {
+    std::cout << "Invalid keyfile" << std::endl;
+    return;
+  }
+
   // get the keyfile name
   std::string keyfile_name = argv[1];
 

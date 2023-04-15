@@ -94,7 +94,9 @@ std::string Efs::Crypto::encryptContent(std::string public_key, std::string plai
     delete[] ciphertext_char;
     throw std::runtime_error("Encryption failed");
   } else {
-    return std::string (reinterpret_cast<char*>(ciphertext_char), ciphertext_length);
+    std::string ret_val = std::string (reinterpret_cast<char*>(ciphertext_char), ciphertext_length);
+    delete[] ciphertext_char;
+    return ret_val;
   }
 }
 
@@ -102,7 +104,7 @@ std::string Efs::Crypto::decryptContent(std::string private_key, std::string cip
   if (ciphertext.length() == 0) {
     throw std::invalid_argument("Empty ciphertext");
   }
-  // Get privat key
+  // Get private key
   BIO *pri_bio = BIO_new_mem_buf(private_key.c_str(), -1);
   if (!pri_bio) {
     BIO_free(pri_bio);
@@ -119,9 +121,13 @@ std::string Efs::Crypto::decryptContent(std::string private_key, std::string cip
   unsigned char* plaintext_char  = new unsigned char[2048];
   int plaintext_length = RSA_private_decrypt(RSA_size(pri_rsa), ciphertext_char, plaintext_char, pri_rsa, RSA_PKCS1_OAEP_PADDING);
   if (-1 == plaintext_length) {
+    RSA_free(pri_rsa);
+    delete[] plaintext_char;
     throw std::runtime_error("Decryption failed");
   } else {
-    return std::string (reinterpret_cast<char*>(plaintext_char), plaintext_length);
+    std::string ret_val = std::string (reinterpret_cast<char*>(plaintext_char), plaintext_length);
+    delete[] plaintext_char;
+    return ret_val;
   }
 }
 
